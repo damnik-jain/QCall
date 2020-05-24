@@ -1,0 +1,48 @@
+{% extends "website/base.html" %}
+{% load static %}
+
+
+{% block actualbody %}
+
+
+     <!-- BLOG -->
+     <section class="blog" style="padding: 30px;">
+          <div class="container">
+            <div class="row">
+                
+                 <div class="col-lg-12 col-12 py-5 mt-5 mb-3 text-center">
+                    <h1 class="mb-4" data-aos="fade-up">Enter the Audio File URL</h1>
+                    <input type="text" id="audiourl" name="url" value="" placeholder="Audio File URL">
+                    <button onclick="callAjax();">Noise Reduction</button>
+                  </div>
+
+
+                  <div>
+                    <p id="progress"></p>
+                  </div>
+
+
+            </div>
+          </div>
+     </section>
+
+<script type="text/javascript">
+  function callAjax(){
+    document.getElementById("progress").innerHTML = "Please wait...";
+    var xhttp = new XMLHttpRequest();
+    xhttp.onreadystatechange = function() {
+        if (this.readyState == 4 && this.status == 200) {
+           window.location = xhttp.responseText;
+        }
+    };
+    xhttp.open("POST", "{% url 'audio' %}", true);
+    xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+    xhttp.send("url="+document.getElementById("audiourl").value);
+
+  }
+
+</script>
+
+{% endblock %}
+
+
