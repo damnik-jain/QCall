@@ -1,0 +1,102 @@
+{% extends "website/base.html" %}
+{% load static %}
+
+
+{% block actualbody %}
+
+<style type="text/css">
+	.login-div {
+		position: absolute;
+		top: 45px;
+		left: 0px;
+		width: 100vw;
+		height: 100vh;
+	}
+
+	.login-inner-div {
+		position: relative;
+		top: 50%;
+		left: 50%;
+		transform: translate(-50%, -50%);
+		width: 40vw;
+		padding: 40px 60px 45px 60px;
+		text-align: center;
+		background-color: white;
+	}
+
+	.socail-media-div {
+		width: 50%;
+		display: inline-block;
+		padding: 5px 10px;
+		margin-right: 20px;
+		margin-left: 25px;
+		cursor: pointer;
+	}
+
+	#login-div-close-button:hover {
+		cursor: pointer;
+	}
+
+	 .top-position {
+		position: absolute;top: 105px;
+	}
+
+	@media (max-width: 750px){
+		.top-position {
+			position: absolute;top: 45px;
+		}
+	}
+</style>
+
+<div class="" style="width:100%;margin:0px;min-height: 100vh;">
+		<div class="col-xs-12 col-sm-8  col-md-6 col-lg-3" style="background-color: white;position: absolute;left: 50%;transform: translateX(-50%);padding:10px 20px 20px 20px;margin-bottom:20px;text-align: center;min-width: 300px;  ">
+				<br><br><br><br>
+
+				<span id="register-html" >
+					<form action="{% url 'register' %}" method="POST" >
+						{% csrf_token %}
+
+						<div style="width: 100%;text-align: left;">
+							<span style="text-align: left;">Email</span>
+							<input type="email" name="username" style="width: 100%;padding: 10px;border:1px solid #dddddd;margin-bottom: 10px;"
+							{% if err_email != ''  %}
+								value="{{ err_email }}"
+							{% endif %}
+							 required="" >
+
+							{% if register_error == "duplicate" %}
+								<p style="color: red;font-size: 12px;width: 100%;text-align: center;">Email already exists</p>
+							{% endif %}
+							{% if register_error == "invalidemail" %}
+								<p style="color: red;font-size: 12px;width: 100%;text-align: center;">Invalid Email</p>
+							{% endif %}
+						</div>
+
+						<div style="width: 100%;text-align: left;">
+							<span style="text-align: left;">Password</span>
+							<input type="password" name="password" style="width: 100%;padding: 10px;border:1px solid #dddddd;margin-bottom: 10px;" required="" >
+						</div><br>
+						<p style="color: red;font-size: 14px;">
+							{% if register_error == "disabled" %}
+								Your account is disabled
+							{% elif register_error == "failed" %}
+								Invalid email and password
+							{% elif register_error == "login_to_checkout" %}
+								Please Login to Checkout
+							{% endif %}
+
+						</p><br>
+						<input class="btn btn-primary" type="submit" name="Submit" value="Signup" style="background-color:#057a8d;color:white;padding: 5px 10px;width: 100%;padding: 5px;margin-bottom: 10px;cursor: pointer;border:0px solid purple;" />
+						<br>
+
+						<h5 style="margin-top:10px;font-size: 14px;cursor: pointer;">Already registered? <a style="color:blue;" href="{% url 'login' %}">Login</a></h5>
+
+					</form>
+				</span>
+
+		</div>
+	</div>
+
+{% endblock %}
+
+

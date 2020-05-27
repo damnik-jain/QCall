@@ -11,3 +11,4 @@ server/localdev-config.json
 .github*
 ./db.sqlite3
 db.sqlite3
+*__pycache__*

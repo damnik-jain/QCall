@@ -9,7 +9,7 @@ var input; 							//MediaStreamAudioSourceNode we'll be recording
 var AudioContext = window.AudioContext || window.webkitAudioContext;
 var audioContext //audio context to help us record
 
-var recordButton = document.getElementById("recordButton");
+var recordButton = document.getElementById("startAndStop");
 var stopButton = document.getElementById("stopButton");
 var pauseButton = document.getElementById("pauseButton");
 
@@ -20,6 +20,9 @@ pauseButton.addEventListener("click", pauseRecording);
 
 function startRecording() {
 	console.log("recordButton clicked");
+
+	$.get( "/startMeeting", function( data ) {
+	  });	
 
 	/*
 		Simple constraints object, for more advanced audio features see
@@ -97,9 +100,11 @@ function pauseRecording(){
 function stopRecording() {
 	console.log("stopButton clicked");
 
+	removeMeetingElement();
+
 	//disable the stop button, enable the record too allow for new recordings
 	stopButton.disabled = true;
-	recordButton.disabled = false;
+	recordButton.disabled = true;
 	pauseButton.disabled = true;
 
 	//reset button just in case the recording is stopped while paused
@@ -115,12 +120,21 @@ function stopRecording() {
 	rec.exportWAV(createDownloadLink);
 }
 
-var data_bkp ;
+function showTranscript(data){
+	$("#transcript-result").show();
+	$("#transcript-bg").show();
+	$("#transcript-value").text(data);
+	$("#transcript-close").click(function(){
+		$("#transcript-result").hide();
+		$("#transcript-bg").hide();
+	});
+}
+
 function createDownloadLink(blob) {
 	
 	var url = URL.createObjectURL(blob);
 	var au = document.createElement('audio');
-	var li = document.createElement('li');
+	var li = document.createElement('div');
 	var link = document.createElement('a');
 
 	//name of .wav file to use during upload and download (without extendion)
@@ -133,32 +147,33 @@ function createDownloadLink(blob) {
 	//save to disk link
 	link.href = url;
 	link.download = filename+".wav"; //download forces the browser to donwload the file using the  filename
-	link.innerHTML = "Save to disk";
+	link.innerHTML = "<button class='btn btn-link' style='position:relative;transform:translateY(-50%);'>Save to disk</button>";
 
 	//add the new audio element to li
 	li.appendChild(au);
 	
-	//add the filename to the li
-	li.appendChild(document.createTextNode(filename+".wav "))
-
 	//add the save to disk link to li
 	li.appendChild(link);
 	
 	//upload link
 	var upload = document.createElement('a');
 	upload.href="#";
-	upload.innerHTML = "Transcript";
+	upload.innerHTML = "<button class='btn btn-primary' onclick='showTranscriptLoader()' style='position:relative;transform:translateY(-50%);'>Transcript</button>";
 
 	upload.addEventListener("click", function(event){
 		let response=fetch("/voice_request", {
 			method: "post",
 			body: blob
-		}).then(response=>{
+		})
+		.then(response => response.json())
+		.then(data => {
 			console.log("^^^^^^^^^^^^ Transcript");
-			console.log(response.text());
-			alert(response.text());
+			console.log(data["transcript"]);
+			showTranscript(data["transcript"]);
 		}).catch(err=>{
-			console.log("[++++++++++++++]  Bayanak error");
+			$("#transcript-result").hide();
+			$("#transcript-bg").hide();
+			console.log("[++++++++++++++] could not process Transcript error");
 		});
 	});
 	li.appendChild(document.createTextNode (" "))//add a space in between

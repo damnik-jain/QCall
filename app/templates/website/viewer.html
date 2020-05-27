@@ -59,18 +59,28 @@
 
 </style>
 
+
+  <div id="transcript-bg" style="width: 100vw;height: 100vh;position: absolute;top: 0;left: 0;background-color: rgba(0,0,0,0.3);z-index: 900;display: none;">
+
+  </div>
+    <div id="transcript-result" style="background-color:white;position: absolute;top: 50vh;left: 50vw;transform: translate(-50%,-50%);width: 50vw;height: 50vh;border: 2px solid gray;padding: 20px;z-index: 1000;display: none;">
+      <button id="transcript-close" style="position: absolute;top: 0;right: 0;margin: 10px;">X</button>
+      <h3 id="transcript-header">Transcript</h3>
+      <p id="transcript-value">Loading...</p>
+      </div>
+
      <!-- BLOG -->
      <section class="blog" style="padding: 30px 10px;">
           <div class="container">
-               <div class="row">
+               <div id="main-div" class="row" style="min-height: 30vh;">
 
-                    <div class="col-lg-2 col-md-2 col-12" style="background-color: white;padding: 0px 30px;min-width: 150px;display: none;">
+                    <div id="object-tab" class="col-lg-2 col-md-2 col-12" style="background-color: white;padding: 0px 30px;min-width: 150px;display: none;">
                     
                         <p style="text-align: center;">Objects</p>
                         <div style="max-height: 65vh; overflow: auto;min-width: 120px;">
                         <br>
                         <div class="object-item">
-                          <img data-id="mathproblem" src="{% static 'object/mathproblem.jpg'%}" class="object-image">
+                          <img data-id="mathproblem" src="{% static 'object/mathproblem.jpg'%}" class="object-image" >
                         </div>
 
                         <div class="object-item">
@@ -90,19 +100,21 @@
                     </div>
 
 
-                    <div id="videocontainer" class="col-lg-7 col-md-7 col-12" style="background-color: brown;max-height: 70vh;">
+                    <div id="videocontainer" class="col-lg-7 col-md-7 col-12" style="max-height: 70vh;">
                      <!-- <canvas id="canvasOutput" class="img-fluid" alt="blog" style="float:left;width:640px;height: 480px;"></canvas> -->
-                     <img src="http://localhost:8080/video_feed" id="canvasOutput" class="img-fluid" alt="blog" style="float:left;width:400px;">
+                     <img src="http://localhost:9000/video_feed" id="canvasOutput" class="img-fluid" alt="blog" style="float:left;display: none;">
+                     <p id="video-wait">Please wait the meeting is starting soon</p>
                      <span id="object-tags"></span>
                      <span id="cancel-tags"></span>
                     </div>
 
 
-    <div class="col-lg-3 col-md-3 col-12" style="" id="pr-container">
+    <div class="col-lg-4 col-md-4 col-12" style="" id="pr-container">
                      
-                      <p style="text-align: center;" id="pr-header">Participants (10)</p>
-                      <div style="max-height: 65vh; overflow: auto;min-width: 120px;" id="pr-div">
+                      <p style="text-align: center;" id="pr-header">Participants (0)</p>
                         <br>
+                        <br>
+                      <div style="max-height: 65vh; overflow-y: auto;min-width: 120px;" id="pr-div">
                               
 
                       </div>  
@@ -113,13 +125,11 @@
      </section>
 <br><br><br><br><br>
 
-<img id="scream" src="/static/atom.png" alt="The Scream" 
-style="display:none;">
 
 <div class="control" style="position: relative;top: -80px;">
-<button id="removeObject">Remove Object</button>
+<!-- <button id="removeObject">Remove Object</button> -->
             <video id="videoInput"   width="320" height="240" style=""></video>
-            <button id="startAndStop" disabled>Start</button></div>
+            <!-- <button id="startAndStop" disabled>Start</button></div> -->
 <textarea class="code" rows="29" cols="100" id="codeEditor" spellcheck="false" style="display: none;">
 </textarea>
 
@@ -130,7 +140,7 @@ const email = "{{id}}";
 const FPS = 1;
 let operations = {};
 </script>
-<script src="{% static 'js/utils.js' %}" type="text/javascript"></script>
+<!-- <script src="{% static 'js/utils.js' %}" type="text/javascript"></script> -->
 
 
 
@@ -244,7 +254,7 @@ let addObject_flag = true;
 const PARTICIPANT_FPS = 2000;
 function getParticipant(){
   console.log("getParticipant()");
-  $.get( "{% url 'getParticipants' %}?email="+email, function( data ) {
+  $.get( "{% url 'getParticipants' %}?email="+"{{broadcast}}", function( data ) {
       pr = JSON.parse(data);
       console.log("Participants");
       console.log(pr);
@@ -252,12 +262,44 @@ function getParticipant(){
       for(var i in pr){
         $("#pr-div").append("<div  class='pr-item'> <img src='{% static 'images/user.png' %}' class='img-fluid pr-icon' alt='user'> </img> <span class='text-primary pr-label'> "+pr[i]+" </span> </div>");
       }
+      $("#pr-header").text("Participant ("+pr.length+")");
   });
   // schedule the next one.
-  let delay = PARTICIPANT_FPS;
-  setTimeout(getParticipant, delay);
+  setTimeout(getParticipant, PARTICIPANT_FPS);
 }
 setTimeout(getParticipant, 0);
+
+
+// schedule the first one.
+const MEETING_FPS = 1000;
+function getMeetingStatus(){
+  console.log("getMeetingStatus()");
+  $.get( "{% url 'getMeetingStatus' %}?mid="+"{{mid}}", function( data ) {
+      console.log(data);
+      res = data;
+      // res = JSON.parse(data);
+      console.log(res);
+      console.log("Response");
+      console.log(res["status"]);
+      if(res["status"]==0 ){
+        if(res["present"]==1 ){
+            var audio_file = res["audio_file"];
+            var transcript = res["transcript"];
+        }
+
+        $("#pr-container").remove();
+        $("#videocontainer").remove();
+        $("#object-tab").remove();
+        $("#main-div").html('<h1>The Meeting has ended</h1>');
+      }else if(res["status"]==2){
+        $("#canvasOutput").show();
+        $("#video-wait").hide();
+      }
+  });
+  setTimeout(getMeetingStatus, MEETING_FPS);
+}
+setTimeout(getMeetingStatus, 0);
+
 
 </script>
 
