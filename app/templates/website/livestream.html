@@ -1,8 +1,10 @@
 {% extends "website/base-withoutnav.html" %}
+
 {% load static %}
 
 
 {% block actualbody %}
+
 {% include "website/websocket.html" %}
 <script src="{% static 'js/websocketbridge.js' %}" type="text/javascript"></script>
 <style type="text/css">
@@ -125,15 +127,38 @@
 
                     </div>
 
-
                </div>
           </div>
      </section>
 <br><br><br><br><br>
 
 
-<img id="scream" src="/static/atom.png" alt="The Scream" 
-style="display:none;">
+<!-- 
+
+<div style="position: absolute;top: 0px;left: 0px;">
+    <table cellpadding="0" cellspacing="0" width="0" border="0">
+    <tr>
+        <td>
+            <video id="videoInput" src="http://localhost:8000/static/time.mp4" width=320 height=240 style="display: none;"></video>
+        </td>
+        <td>
+            <canvas id="canvasOutput" width=320 height=240></canvas>
+        </td>
+        <td></td>
+        <td></td>
+    </tr>
+    <tr>
+        <td>
+            <div class="caption">videoInput</div>
+        </td>
+        <td>
+            <div class="caption">canvasOutput</div>
+        </td>
+        <td></td>
+        <td></td>
+    </tr>
+    </table>
+</div> -->
 
 <div class="control" style="position: relative;top: -80px;">
 <button id="removeObject">Remove Object</button>
@@ -191,7 +216,6 @@ setTimeout(processVideo, 0);
 </script>
 <script type="text/javascript">
 let utils = new Utils('errorMessage');
-
 let operations = {};
 syncOperations(operations);
 utils.loadCode('codeSnippet', 'codeEditor');

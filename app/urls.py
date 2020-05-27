@@ -22,6 +22,4 @@ urlpatterns = [
                path('viewer', views.viewer, name="viewer"),
                path('getParticipants', views.getParticipants, name="getParticipants"),
                path('voice_request', views.voice_request, name="voice_request"),
-
-
      ]

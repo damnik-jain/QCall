@@ -137,7 +137,11 @@ function Utils(errorOutputId) { // eslint-disable-line no-unused-vars
             videoConstraint = true;
         }
 
+<<<<<<< HEAD
         navigator.mediaDevices.getUserMedia({video: videoConstraint, audio: true})
+=======
+        navigator.mediaDevices.getUserMedia({video: videoConstraint, audio: false})
+>>>>>>> 7a53487551e965abb1b354b563bb919473ac13e2
             .then(function(stream) {
                 video.srcObject = stream;
                 video.play();
