@@ -10,3 +10,11 @@ class Operations(models.Model):
 class Participants(models.Model):
     mainorg = models.CharField(max_length=100,primary_key=True)
     participant = models.CharField(max_length=10000)
+
+
+
+class Transcript(models.Model):
+    email = models.CharField(max_length=100,primary_key=True)
+    transcript = models.CharField(max_length=100000)
+    audio_file = models.CharField(max_length=100)
+    timestamp = models.DateTimeField(auto_now_add=True)

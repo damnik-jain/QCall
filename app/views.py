@@ -6,7 +6,7 @@ from django.shortcuts import render, redirect
 from django.views.decorators.csrf import csrf_exempt
 from scipy.io import wavfile
 
-from .models import Operations,Participants
+from .models import Operations,Participants,Transcript
 import json
 # import noisereduce as nr
 # import soundfile as sf
@@ -135,6 +135,7 @@ def ReceiverViewDuplicate(request):
 
 def organiser(request):
 	email = request.GET.get('email')
+	request.session['organiser'] = email
 	removeParticipants(email)
 	return render(request, 'website/organiser.html', {"id":email})
 
@@ -181,55 +182,55 @@ def getParticipants(request):
 	print(res)
 	return JsonResponse(res, safe=False)
 
+import time
 
-# from imutils.video import VideoStream
-# outputFrame = None
-# lock = threading.Lock()
-# vs = VideoStream(src="https://macabre-industries.000webhostapp.com/song.mp4").start()
-# time.sleep(2.0)
+from ibm_watson import SpeechToTextV1
+from ibm_cloud_sdk_core.authenticators import IAMAuthenticator
+#pip install websocket-client
+#pip install ibm_watson
+# pip install ibm_cloud_sdk_core
 
-# def index():
-# 	return render_template("index.html")
+@csrf_exempt
+def voice_request(request):
+	millis = int(round(time.time() * 1000))
+	
+	# print(request.body)
+	# print(request.POST["audio_data"])
+	try:
+		print("Email ",request.session['email'])
+	except:
+		print("Email ","notfound")
+	filename = "audio"
+	try:
+		filename = request.session['email']
+	except:
+		pass
 
-# def detect_motion(frameCount):
-# 	global vs, outputFrame, lock
+	filename += str(millis)
+	fileurl = '/static/output/'+filename+'.wav'
+	filepath = './app'+fileurl
+	f = open(filepath, 'wb')
+	f.write(request.body)
+	f.close()
 
-# 	# loop over frames from the video stream
-# 	while True:
-# 		# read the next frame from the video stream, resize it,
-# 		# convert the frame to grayscale, and blur it
-# 		frame = vs.read()
-# 		frame = imutils.resize(frame, width=400)
 
-# 		# acquire the lock, set the output frame, and release the
-# 		# lock
-# 		with lock:
-# 			outputFrame = frame.copy()
-		
-# def generate():
-# 	# grab global references to the output frame and lock variables
-# 	global outputFrame, lock
+	api = IAMAuthenticator("rLiffBz3rQNWKyIJKmhmGGb8jMaI4G4DY63gEuc2vDXt")
 
-# 	# loop over frames from the output stream
-# 	while True:
-# 		# wait until the lock is acquired
-# 		with lock:
-# 			# check if the output frame is available, otherwise skip
-# 			# the iteration of the loop
-# 			if outputFrame is None:
-# 				continue
+	stot=SpeechToTextV1(authenticator=api)
 
-# 			# encode the frame in JPEG format
-# 			(flag, encodedImage) = cv2.imencode(".jpg", outputFrame)
+	stot.set_service_url("https://api.eu-gb.speech-to-text.watson.cloud.ibm.com/instances/c1d0ac86-901c-42c5-ab92-03cbaff5f3f3")
 
-# 			# ensure the frame was successfully encoded
-# 			if not flag:
-# 				continue
+	with open(filepath,"rb") as audio_file:
+		result = stot.recognize(audio=audio_file,content_type="audio/wav").get_result()
 
-# 		# yield the output frame in the byte format
-# 		return (b'--frame\r\n' b'Content-Type: image/jpeg\r\n\r\n' + 
-# 			bytearray(encodedImage) + b'\r\n')
+	print(result)
+	transcript = ""
+	for i in result['results']:
+		transcript += " "+str(i['alternatives'][0]['transcript'])
+		print(i['alternatives'][0]['transcript'])
 
-# def video_feed():
-# 	return Response(generate(),
-# 		mimetype = "multipart/x-mixed-replace; boundary=frame")
+	Transcript.objects.create(email=request.user['email'],
+		transcript=transcript,audio_file=fileurl)
+	return HttpResponse(transcript)
+
+#To create meetings resources client receiver

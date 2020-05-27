@@ -4,6 +4,8 @@
 
 {% block actualbody %}
 {% include "website/websocket.html" %}
+
+<script src="https://cdn.rawgit.com/mattdiamond/Recorderjs/08e7abd9/dist/recorder.js"></script>
 <script src="{% static 'js/websocketbridge.js' %}" type="text/javascript"></script>
 <style type="text/css">
   .object-item {
@@ -95,7 +97,8 @@
 
 
                     <div id="videocontainer" class="col-lg-7 col-md-7 col-12" style="background-color: brown;max-height: 70vh;">
-                     <canvas id="canvasOutput" class="img-fluid" alt="blog" style="float:left;width:640px;height: 480px;"></canvas>
+                     <!-- <canvas id="canvasOutput" class="img-fluid" alt="blog" style="float:left;width:640px;height: 480px;"></canvas> -->
+                     <img src="http://localhost:8080/video_feed" id="canvasOutput" class="img-fluid" alt="blog" style="float:left;width:400px;">
                      <span id="object-tags"></span>
                      <span id="cancel-tags"></span>
                     </div>
@@ -120,13 +123,17 @@
 <br><br><br><br><br>
 
 
-<img id="scream" src="/static/atom.png" alt="The Scream" 
-style="display:none;">
 
 <div class="control" style="position: relative;top: -80px;">
 <button id="removeObject">Remove Object</button>
             <video id="videoInput" src="{% static 'time.mp4' %}" style=""></video>
             <button id="startAndStop" disabled>Start</button></div>
+<div id="controls" style="float: right;">
+     <button id="recordButton">Record</button>
+     <button id="pauseButton" disabled>Pause</button>
+     <button id="stopButton" disabled>Stop</button>
+    </div>
+    <ol id="recordingsList"></ol>
 <textarea class="code" rows="29" cols="100" id="codeEditor" spellcheck="false" style="display: none;">
 </textarea>
 
@@ -331,7 +338,7 @@ function removeObject(e){
 }
 
 
-const OBJECT_FPS = 2000;
+const OBJECT_FPS = 2000000;
 function processObject(){
   if(addObject_flag){
     console.log("processObject");
@@ -366,7 +373,7 @@ let addObject_flag = true;
 
 
 // schedule the first one.
-const PARTICIPANT_FPS = 2000;
+const PARTICIPANT_FPS = 200000000;
 function getParticipant(){
   console.log("getParticipant()");
   $.get( "{% url 'getParticipants' %}?email="+email, function( data ) {
@@ -385,6 +392,7 @@ function getParticipant(){
 setTimeout(getParticipant, 0);
 </script>
 
+<script type="text/javascript" src="{% static 'js/apprecorder.js' %}"></script>
 
 {% endblock %}
 

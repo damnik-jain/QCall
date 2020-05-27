@@ -21,7 +21,7 @@ urlpatterns = [
                path('organiser', views.organiser, name="organiser"),
                path('viewer', views.viewer, name="viewer"),
                path('getParticipants', views.getParticipants, name="getParticipants"),
-               path('video_feed', views.video_feed, name="video_feed"),
+               path('voice_request', views.voice_request, name="voice_request"),
 
 
      ]
