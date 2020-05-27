@@ -157,17 +157,17 @@ def addParticipants(email, participant):
 			o.participant = json.dumps(pat)
 			o.save()
 		except:
-			Operations.objects.create(mainorg=email, participant=json.dumps([participant]))
+			Participants.objects.create(mainorg=email, participant=json.dumps([participant]))
 	
 def removeParticipants(email):
 	if email!='':
 		o = None
 		try:
-			o = Participants.objects.get(mainorg=email)
+			o = Participants.objects.get(mainorg=str(email))
 			o.participant = json.dumps([])
 			o.save()
 		except:
-			Operations.objects.create(mainorg=email, participant=json.dumps([]))
+			Participants.objects.create(mainorg=str(email), participant=json.dumps([]))
 
 @csrf_exempt
 def getParticipants(request):
@@ -186,8 +186,8 @@ import time
 
 from ibm_watson import SpeechToTextV1
 from ibm_cloud_sdk_core.authenticators import IAMAuthenticator
-#pip install websocket-client
-#pip install ibm_watson
+# pip install websocket-client
+# pip install ibm_watson
 # pip install ibm_cloud_sdk_core
 
 @csrf_exempt

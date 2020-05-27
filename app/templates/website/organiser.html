@@ -98,7 +98,7 @@
 
                     <div id="videocontainer" class="col-lg-7 col-md-7 col-12" style="background-color: brown;max-height: 70vh;">
                      <!-- <canvas id="canvasOutput" class="img-fluid" alt="blog" style="float:left;width:640px;height: 480px;"></canvas> -->
-                     <img src="http://localhost:8080/video_feed" id="canvasOutput" class="img-fluid" alt="blog" style="float:left;width:400px;">
+                     <img src="http://localhost:8080/video_feed" id="canvasOutput" class="img-fluid" alt="blog" style="float:left;">
                      <span id="object-tags"></span>
                      <span id="cancel-tags"></span>
                     </div>
@@ -126,7 +126,6 @@
 
 <div class="control" style="position: relative;top: -80px;">
 <button id="removeObject">Remove Object</button>
-            <video id="videoInput" src="{% static 'time.mp4' %}" style=""></video>
             <button id="startAndStop" disabled>Start</button></div>
 <div id="controls" style="float: right;">
      <button id="recordButton">Record</button>
