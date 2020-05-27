@@ -163,11 +163,11 @@ def removeParticipants(email):
 	if email!='':
 		o = None
 		try:
-			o = Participants.objects.get(mainorg=email)
+			o = Participants.objects.get(mainorg=str(email))
 			o.participant = json.dumps([])
 			o.save()
 		except:
-			Operations.objects.create(mainorg=email, participant=json.dumps([]))
+			Participants.objects.create(mainorg=str(email), participant=json.dumps([]))
 
 @csrf_exempt
 def getParticipants(request):
