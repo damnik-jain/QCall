@@ -340,6 +340,15 @@ function removeMeetingElement(){
 function addObjectImage(){
   let url = $("#object-add-url").val();
   $('#object-actual-tab').append("<div class='object-item'><img data-id='"+url+"' src='"+url+"' class='object-image'></div>");
+  $(".object-image").click(function(e){
+    image_selected = $(this).attr("data-id");
+    image_selected_url = $(this).attr("src");
+    console.log($(this).attr("data-id"));
+    console.log($(this).attr("src"));
+    $(".object-image").css("border", "none");
+    $(this).css("border", "2px solid blue");
+  });
+
 }
 
 </script>

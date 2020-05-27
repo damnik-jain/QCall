@@ -11,6 +11,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from .models import Operations,Participants,Transcript,Meeting
 import json
+from gensim.summarization.summarizer import summarize
 # import noisereduce as nr
 # import soundfile as sf
 # from noisereduce.generate_noise import band_limited_noise
@@ -239,11 +240,12 @@ def voice_request(request):
 	with open(filepath,"rb") as audio_file:
 		result = stot.recognize(audio=audio_file,content_type="audio/wav").get_result()
 
-	print(result)
 	transcript = ""
 	for i in result['results']:
 		transcript += " "+str(i['alternatives'][0]['transcript'])
 		print(i['alternatives'][0]['transcript'])
+	summary = summarize(transcript,ratio=0.3,split=True)
+	transcript += "<br><br><h2>Summary<h2><p>"+str(summary)+"</p>"
 
 	Transcript.objects.create(meeting_id=request.session.get("mid",""),
 		transcript=transcript,audio_file=fileurl)

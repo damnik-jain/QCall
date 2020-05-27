@@ -123,7 +123,7 @@ function stopRecording() {
 function showTranscript(data){
 	$("#transcript-result").show();
 	$("#transcript-bg").show();
-	$("#transcript-value").text(data);
+	$("#transcript-value").html(data);
 	$("#transcript-close").click(function(){
 		$("#transcript-result").hide();
 		$("#transcript-bg").hide();
