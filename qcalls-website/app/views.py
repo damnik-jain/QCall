@@ -198,7 +198,7 @@ def getParticipants(request):
 			res = o.participant
 		except:
 			res = []
-	print(res)
+	# print(res)
 	return JsonResponse(res, safe=False)
 
 import time
@@ -213,10 +213,6 @@ from ibm_cloud_sdk_core.authenticators import IAMAuthenticator
 def voice_request(request):
 	millis = int(round(time.time() * 1000))
 	
-	try:
-		print("Email ",request.user.email)
-	except:
-		print("Email ","notfound")
 	filename = "audio"
 	try:
 		filename = request.user.email
@@ -229,7 +225,6 @@ def voice_request(request):
 	f = open(filepath, 'wb')
 	f.write(request.body)
 	f.close()
-
 
 	api = IAMAuthenticator("rLiffBz3rQNWKyIJKmhmGGb8jMaI4G4DY63gEuc2vDXt")
 
@@ -246,7 +241,7 @@ def voice_request(request):
 		print(i['alternatives'][0]['transcript'])
 	summary = summarize(transcript,ratio=0.3,split=True)
 	transcript += "<br><br><h2>Summary<h2><p>"+str(summary)+"</p>"
-
+	print("Final Transcript: "+transcript)
 	Transcript.objects.create(meeting_id=request.session.get("mid",""),
 		transcript=transcript,audio_file=fileurl)
 	return JsonResponse({'transcript':transcript})
@@ -360,15 +355,8 @@ def logoutForm(request):
 
 @login_required
 def endMeeting(request):
-	if request.method.lower()=="post":
-		mid = request.POST.get('mid')
-		m = Meeting.objects.get(meeting_id=mind)
-		m.status = 0
-		m.save()
-		return HttpResponse('Done')
 	if request.method.lower()=="get":
-		mid = request.GET.get('mid')
-		m = Meeting.objects.get(meeting_id=mind)
+		m = Meeting.objects.get(meeting_id=request.session.get('mid'))
 		m.status = 0
 		m.save()
 		return HttpResponse('Done')
@@ -390,6 +378,7 @@ def getMeetingStatus(request):
 		res["present"] = 0
 		res["transcript"] = "na"
 		res["audio_file"] = "na"
+	# print(res)
 	return JsonResponse(res, safe=False)
 
 @csrf_exempt
@@ -397,7 +386,7 @@ def startMeeting(request):
 	m = Meeting.objects.get(meeting_id=request.session.get('mid'))
 	m.status = 2
 	m.save()
-	print("\n\n\n\n\n\n\n Meeting status update to 2\n\n\n\n\n\n\n\n\n")
+	# print("\n\n\n\n\n\n\n Meeting status update to 2\n\n\n\n\n\n\n\n\n")
 	m = Meeting.objects.get(meeting_id=request.session.get('mid'))
-	print(str(m.status))
+	# print(str(m.status))
 	return HttpResponse('Done')

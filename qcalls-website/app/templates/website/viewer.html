@@ -109,7 +109,7 @@
 
                   <div class="col-lg-4 col-md-4 col-12" style="" id="pr-container">
                      
-                      <p style="text-align: center;" onclick="endMeeeeeting()" id="pr-header">Participants (0)</p>
+                      <p style="text-align: center;"  id="pr-header">Participants (0)</p>
                         <br>
                         <br>
                       <div style="max-height: 65vh; overflow-y: auto;min-width: 120px;" id="pr-div">
@@ -137,17 +137,13 @@
 const email = "{{id}}";
 const FPS = 1;
 let operations = {};
+let meetingStatus = true;
 </script>
 <!-- <script src="{% static 'js/utils.js' %}" type="text/javascript"></script> -->
 
 
 <script>
-function endMeeeeeting(){
-        $("#pr-container").remove();
-        $("#videocontainer").remove();
-        $("#object-tab").remove();
-        $("#main-div").html('<h1>The Meeting has ended</h1>');
-}
+
 
 function removeObject(e){
   // alert('removeing object'+$(e).attr('data-remove'));
@@ -185,8 +181,9 @@ function processObject(){
       $("#object-tags").append("<img src='"+obj[5]+"' class='object-overlay' style='top:"+obj[2]+"px;left:"+obj[1]+"px;' data-remove='"+ide+"' data-id='"+key+"' >");
       $("#cancel-tags").append("<p src='"+obj[5]+"' class='object-overlay' style='top:"+obj[2]+"px;left:"+obj[1]+"px;z-index:100;' data-remove='"+ide+"' data-id='"+key+"' onclick='removeObject(this);' >X</p>");
     }
-
-    setTimeout(processObject, OBJECT_FPS);
+    if(meetingStatus){
+      setTimeout(processObject, OBJECT_FPS);
+    }
   }
 }
 
@@ -210,39 +207,48 @@ function getParticipant(){
       $("#pr-header").text("Participant ("+pr.length+")");
   });
   // schedule the next one.
-  setTimeout(getParticipant, PARTICIPANT_FPS);
+  if(meetingStatus){
+    setTimeout(getParticipant, PARTICIPANT_FPS);
+  }
 }
 setTimeout(getParticipant, 0);
 
+function meetingEnded(){
+  $("#pr-container").remove();
+  $("#videocontainer").remove();
+  $("#object-tab").remove();
+  $("#main-div").html('<h1>The Meeting has ended</h1>');
+  $("#canvasOutput").remove();
+  meetingStatus = false;
+}
 
+let transcript;
 // schedule the first one.
-// const MEETING_FPS = 1000;
-// function getMeetingStatus(){
-//   console.log("getMeetingStatus()");
-//   $.get( "{% url 'getMeetingStatus' %}?mid="+"{{mid}}", function( data ) {
-//       console.log(data);
-//       res = data;
-//       // res = JSON.parse(data);
-//       console.log(res);
-//       console.log("Response");
-//       console.log(res["status"]);
-//       if(res["status"]==0 ){
-//         if(res["present"]==1 ){
-//             var transcript = res["transcript"];
-//         }
-
-//         $("#pr-container").remove();
-//         $("#videocontainer").remove();
-//         $("#object-tab").remove();
-//         $("#main-div").html('<h1>The Meeting has ended</h1>');
-//       }else if(res["status"]==2){
-//         $("#canvasOutput").show();
-//         $("#video-wait").hide();
-//       }
-//   });
-//   setTimeout(getMeetingStatus, MEETING_FPS);
-// }
-// setTimeout(getMeetingStatus, 0);
+const MEETING_FPS = 1000;
+function getMeetingStatus(){
+  console.log("getMeetingStatus()");
+  $.get( "{% url 'getMeetingStatus' %}?mid="+"{{mid}}", function( data ) {
+      console.log(data);
+      res = data;
+      // res = JSON.parse(data);
+      console.log(res);
+      console.log("Response");
+      console.log(res["status"]);
+      if(res["status"]==0 ){
+        if(res["present"]==1 ){
+            transcript = res["transcript"];
+        }
+        meetingEnded();
+      }else if(res["status"]==2){
+        $("#canvasOutput").show();
+        $("#video-wait").hide();
+      }
+  });
+  if(meetingStatus){
+    setTimeout(getMeetingStatus, MEETING_FPS);
+  }
+}
+setTimeout(getMeetingStatus, 0);
 
 
 </script>

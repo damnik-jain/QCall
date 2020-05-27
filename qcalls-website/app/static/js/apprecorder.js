@@ -98,9 +98,15 @@ function pauseRecording(){
 }
 
 function stopRecording() {
+
+	meetingStatus = false;
+	$("#canvasOutput").remove();
 	console.log("stopButton clicked");
 
 	removeMeetingElement();
+
+	$.get( "/endMeeting");	
+
 
 	//disable the stop button, enable the record too allow for new recordings
 	stopButton.disabled = true;
@@ -158,10 +164,11 @@ function createDownloadLink(blob) {
 	//upload link
 	var upload = document.createElement('a');
 	upload.href="#";
-	upload.innerHTML = "<button class='btn btn-primary' onclick='showTranscriptLoader()' style='position:relative;transform:translateY(-50%);'>Transcript</button>";
+	upload.innerHTML = "<button class='btn btn-primary' style='position:relative;transform:translateY(-50%);'>Transcript</button>";
 
 
 	upload.addEventListener("click", function(event){
+		showTranscriptLoader();
 		let response=fetch("/voice_request", {
 			method: "post",
 			body: blob

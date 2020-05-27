@@ -67,38 +67,58 @@
       </div>
     
      <!-- BLOG -->
-     <section class="blog" style="padding: 30px 10px 0px 10px;">
+     <section class="blog" style="padding: 15px 10px 0px 10px;">
           <div class="container">
+          
                <div id="main-div" class="row" style="min-height: 30vh;">
 
 
-                    <div id="object-tab" class="col-lg-2 col-md-2 col-12" style="background-color: white;padding: 0px 30px;min-width: 150px;">
+                    <!-- Object Section -->
+                    <div id="object-tab" class="col-lg-2 col-md-2 col-12" style="background-color: white;min-width: 150px;">
                         
-                        <p style="text-align: center;">Objects</p>
-                        <div style="max-height: 65vh; overflow: auto;min-width: 120px;" id="object-actual-tab">
-                        <br>
-                        <div class="object-item">
-                          <img data-id="digestive" src="{% static 'object/digestive.png'%}" class="object-image">
+                        <div style="padding: 0px 30px;">
+                          <p style="text-align: center;">Objects</p>
+                          <div style="max-height: 65vh; overflow: auto;min-width: 120px;" id="object-actual-tab">
+                            <br>
+                            <div class="object-item">
+                              <img data-id="digestive" src="{% static 'object/digestive.png'%}" class="object-image">
+                            </div>
+                            
+                            <div class="object-item">
+                              <img data-id="heart" src="{% static 'object/heart.png'%}"  class="object-image">
+                            </div>
+                            <div class="object-item">
+                              <img data-id="crystal" src="{% static 'object/crystal.png'%}"  class="object-image">
+                            </div>
+                            <div class="object-item">
+                              <img data-id="pentagon" src="{% static 'object/pentagon.png'%}"  class="object-image">
+                            </div>
+                          </div>  
                         </div>
                         
-                        <div class="object-item">
-                          <img data-id="heart" src="{% static 'object/heart.png'%}"  class="object-image">
+
+                      <br>
+
+                      <div class="input-group mb-3">
+                        <div class="input-group-append">
+                          <button onclick="addObjectImage()"  class="btn btn-outline-secondary btn-info" id="object-add-button" style="float: left;color: white;">Add</button>
                         </div>
-                        <div class="object-item">
-                          <img data-id="crystal" src="{% static 'object/crystal.png'%}"  class="object-image">
-                        </div>
-                        <div class="object-item">
-                          <img data-id="pentagon" src="{% static 'object/pentagon.png'%}"  class="object-image">
-                        </div>
+                        <input type="text" value="" placeholder="Image URL" id="object-add-url" style="max-width: 150px;" class="form-control">
                       </div>
-                      <br><br>
-                      <input type="text" value="" placeholder="Image URL" id="object-add-url" style="max-width: 150px;">
-                      <button onclick="addObjectImage()" class="btn btn-info" id="object-add-button">Add</button><br>
-                        <button class="btn btn-primary" id="removeObject" style="float: left;position: relative;top: 15px;">Remove All</button>
+
+<!-- 
+                      <div class="input-group">
+                        <div class="input-group-append">
+                          <button onclick="addObjectImage()"  class="btn btn-outline-secondary btn-info" id="object-add-button" style="float: left;color: white;">Resize</button>
+                        </div>
+                        <input type="text" value="" placeholder="%" id="object-add-url" style="max-width: 150px;" class="form-control">
+                      </div> -->
+
+                      <button class="btn btn-primary" id="removeObject" style="float: left;position: relative;top: 15px;">Remove All</button>
 
                     </div>
 
-
+                    <!-- Video Section -->
                     <div id="videocontainer" class="col-lg-7 col-md-7 col-12" style="max-height: 70vh;">
                      <!-- <canvas id="canvasOutput" class="img-fluid" alt="blog" style="float:left;width:640px;height: 480px;"></canvas> -->
                      <img src="http://localhost:9000/video_feed" id="canvasOutput" class="img-fluid" alt="Video-server" style="float:left;">
@@ -108,6 +128,7 @@
 
 
 
+                    <!-- Participants Section -->
                     <div class="col-lg-3 col-md-3 col-12" style="" id="pr-container">
 
                       <p style="width: 100%;text-align: center;">Link to Join: 
@@ -118,20 +139,20 @@
                               
 
                       </div>  
-
+                      <div id="controls" style="float: right;position: absolute;bottom: 30px;">
+                         <button id="pauseButton" disabled style="display: none;"></button>
+                        <button id="startAndStop" class="btn btn-success" style="margin-right: 20px; ">Start Meeting</button>
+                         <button id="stopButton" class="btn btn-danger" disabled>End Meeting</button>
+                      </div>
                     </div>
 
                </div>
+              <div id="recordingsList" style=""></div>
+          
           </div>
      </section>
 
 
-<div id="controls" style="float: right;margin-right: 20px;position: relative;top: -10px;">
-   <button id="pauseButton" disabled style="display: none;"></button>
-  <button id="startAndStop" class="btn btn-success" style="margin-right: 20px; ">Start Meeting</button>
-   <button id="stopButton" class="btn btn-danger" disabled>End Meeting</button>
-</div>
-<div id="recordingsList" style="float:right;"></div>
 <div style="height: 20vh;float: both;"></div>
 <textarea class="code" rows="29" cols="100" id="codeEditor" spellcheck="false" style="display: none;">
 </textarea>
@@ -149,6 +170,7 @@ function syncOperations(opr){
 
 const FPS = 10;
 let bkp = [];
+let meetingStatus = true;
 </script>
 <!-- <script src="{% static 'js/utils.js' %}" type="text/javascript"></script> -->
 
@@ -272,7 +294,7 @@ function removeObject(e){
 }
 
 
-const OBJECT_FPS = 2000;
+let OBJECT_FPS = 2000;
 function processObject(){
   if(addObject_flag){
     console.log("processObject");
@@ -295,8 +317,10 @@ function processObject(){
       $("#object-tags").append("<img src='"+obj[5]+"' class='object-overlay' style='top:"+obj[2]+"px;left:"+obj[1]+"px;' data-remove='"+ide+"' data-id='"+key+"' >");
       $("#cancel-tags").append("<p src='"+obj[5]+"' class='object-overlay' style='top:"+obj[2]+"px;left:"+obj[1]+"px;z-index:100;' data-remove='"+ide+"' data-id='"+key+"' onclick='removeObject(this);' >X</p>");
     }
+    if(meetingStatus){
+      setTimeout(processObject, OBJECT_FPS);
+    }
 
-    setTimeout(processObject, OBJECT_FPS);
   }
 }
 
@@ -307,7 +331,7 @@ let addObject_flag = true;
 
 
 // schedule the first one.
-const PARTICIPANT_FPS = 2000;
+let PARTICIPANT_FPS = 2000;
 function getParticipant(){
   console.log("getParticipant()");
   $.get( "{% url 'getParticipants' %}?email="+email, function( data ) {
@@ -321,7 +345,9 @@ function getParticipant(){
       $("#pr-header").text("Participant ("+pr.length+")");
   });
   // schedule the next one.
-  setTimeout(getParticipant, PARTICIPANT_FPS);
+  if(meetingStatus){
+    setTimeout(getParticipant, PARTICIPANT_FPS);  
+  }
 }
 setTimeout(getParticipant, 0);
 
