@@ -1,0 +1,210 @@
+
+{% extends "website/base-withoutnav.html" %}
+{% load static %}
+
+
+{% block actualbody %}
+{% include "website/websocket.html" %}
+<script src="{% static 'js/websocketbridge.js' %}" type="text/javascript"></script>
+<script src="https://docs.opencv.org/3.4/opencv.js" type="text/javascript"></script>
+
+<style type="text/css">
+  .object-item {
+    width: 100px;
+    position: relative;left: 50%;transform: translate(-50%);
+    margin-bottom: 20px;
+  }
+  .object-image {
+    width: 100px;
+    position: relative;left: 50%;transform: translate(-50%);
+    margin-bottom: 20px;
+  }
+
+  .object-overlay {
+    width: 100px;height: 100px;position: absolute;z-index: 10;
+  }
+
+/* width */
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  box-shadow: inset 0 0 5px grey; 
+  border-radius: 10px;
+}
+ 
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: #0BC0ED; 
+  border-radius: 10px;
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  background: #0C9CBF; 
+}
+
+</style>
+
+     <!-- BLOG -->
+     <section class="blog" style="padding: 30px 10px;">
+          <div class="container">
+               <div class="row">
+
+
+                    <div class="col-lg-2 col-md-2 col-12" style="background-color: white;padding: 0px 30px;min-width: 150px;">
+                        <!-- <p style="text-align: center;">Coordinates</p>
+                        <div style="position: relative;left: 50%;transform: translateX(-25%);">
+                          <input type="number" id="value1" value="100" placeholder="X Coord" style="max-width: 80px;">
+
+                          <input type="number" id="value2" value="100" placeholder="Y Coord" style="max-width: 80px;">
+
+                        </div> -->
+                        
+                        <p style="text-align: center;">Objects</p>
+                        <div style="max-height: 65vh; overflow: auto;min-width: 120px;">
+                        <br>
+                        <div class="object-item">
+                          <img data-id="mathproblem" src="{% static 'object/mathproblem.jpg'%}" class="object-image">
+                        </div>
+
+                        <div class="object-item">
+                          <img data-id="heart" src="{% static 'object/heart.jpg'%}"  class="object-image">
+                        </div>
+                        <div class="object-item">
+                          <img data-id="crystal" src="{% static 'object/crystal.png'%}"  class="object-image">
+                        </div>
+                        <div class="object-item">
+                          <img data-id="pentagon" src="{% static 'object/pentagon.png'%}"  class="object-image">
+                        </div>
+                        <div class="object-item">
+                          <img data-id="neuralnetwork" src="{% static 'object/neuralnetwork.png'%}"  class="object-image">
+                        </div>  
+                      </div>
+                      
+                    </div>
+
+
+                    <div id="videocontainer" class="col-lg-7 col-md-7 col-12" style="max-height: 70vh;">
+                     <canvas id="canvasOutput" class="img-fluid" alt="blog" style="float:left;width:128px;height: 72px;"></canvas>
+                     <span id="object-tags"></span>
+                     <span id="cancel-tags"></span>
+                    </div>
+
+
+
+                    <div class="col-lg-3 col-md-3 col-12">
+                     
+                      <div class="blog-sidebar justify-content-center align-items-center" data-aos="fade-up" data-aos-delay="200" style="margin-bottom: 20px;">
+                        <video src="/static/song.mp4" class="img-fluid" alt="blog" style="width: 200px;height: 100px;background-color: green;">
+                        </video>
+                        <div class="blog-info">
+                          <h4 class="blog-category text-primary">
+                            Mihir Makwana
+                          </h4>
+                        </div>
+                      </div>
+                      <div class="blog-sidebar justify-content-center align-items-center" data-aos="fade-up" data-aos-delay="200" style="margin-bottom: 20px;">
+                        <video src="/static/song.mp4" class="img-fluid" alt="blog" style="width: 200px;height: 100px;background-color: green;">
+                        </video>
+                        <div class="blog-info">
+                          <h4 class="blog-category text-primary">
+                            Damnik Jain
+                          </h4>
+                        </div>
+                      </div>
+                       <div class="blog-sidebar justify-content-center align-items-center" data-aos="fade-up" data-aos-delay="200" style="margin-bottom: 20px;">
+                        <video src="/static/song.mp4" class="img-fluid" alt="blog" style="width: 200px;height: 100px;background-color: green;">
+                        </video>
+                        <div class="blog-info">
+                          <h4 class="blog-category text-primary">
+                            Ross Charvalo
+                          </h4>
+                        </div>
+                      </div>
+
+
+                    </div>
+
+
+               </div>
+          </div>
+     </section>
+<br><br><br><br><br>
+
+<img id="scream" src="/static/atom.png" alt="The Scream" 
+style="display:none;">
+
+<div class="control" style="position: relative;top: -80px;">
+<button id="removeObject">Remove Object</button>
+            <video id="videoInput"  src="/static/time.mp4" width="320" height="240" style=""></video>
+            <button id="startAndStop" disabled>Start</button></div>
+<textarea class="code" rows="29" cols="100" id="codeEditor" spellcheck="false" style="display: none;">
+</textarea>
+
+<p class="err" id="errorMessage"></p>
+<script src="https://webrtc.github.io/adapter/adapter-5.0.4.js" type="text/javascript"></script>
+<script type="text/javascript">
+const FPS = 1;
+</script>
+<script src="{% static 'js/utils.js' %}" type="text/javascript"></script>
+
+
+<script id="codeSnippet" type="text/javascript" style="width:1000px;height: 500px;display: none;">
+
+  let res_bkp = null;
+  cv['onRuntimeInitialized']=()=>{
+    
+    
+  let src = new cv.Mat(72, 128, cv.CV_8UC4);
+    const webSocketBridge = new channels.WebSocketBridge();
+    webSocketBridge.connect(websocket_url);
+    webSocketBridge.listen(function(action, stream) {
+      if(action=="receiverorsender"){
+        webSocketBridge.send({"id":"{{id}}", "action":"addme", "type":"receiver"});
+        alert("You will now receive message");
+      }
+      res_bkp = action;
+      console.log(action);
+      if(action.type="iv"){
+        var obj=null;
+        try {
+          obj = JSON.parse("["+action.message+"]");
+        }
+        catch(err) {
+          console.log("error parsing json");
+        }
+        console.log("Object received",obj);
+        let mat = cv.matFromArray(72, 128, cv.CV_8UC4, obj);
+        cv.imshow('canvasOutput', mat);
+      }
+      console.log("Received MEssage :", action);
+    })
+    document.ws = webSocketBridge; /* for debugging */
+  
+    
+  };
+
+
+
+
+
+</script>
+
+
+{% endblock %}
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -58,7 +58,9 @@ TEMPLATES = [
              },
              ]
 
+# ASGI_APPLICATION = "pythondjangoapp.routing.application"
 WSGI_APPLICATION = 'pythondjangoapp.wsgi.application'
+
 
 # Password validation
 # https://docs.djangoproject.com/en/1.11/ref/settings/#auth-password-validators
@@ -87,3 +89,22 @@ STATICFILES_DIRS = (
                     )
 
 STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
+
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+    }
+}
+
+# CHANNEL_LAYERS = {
+#     'default': {
+#         'BACKEND': 'channels_redis.core.RedisChannelLayer',
+#         'CONFIG': {
+#             'hosts': [("redis://:6918xm1KN07HWlcEIAM1tZhKkLBGC804@redis-19049.c61.us-east-1-3.ec2.cloud.redislabs.com:19049")],
+#         },
+#         'ROUTING': "pythondjangoapp.routing.application",
+#     }
+# }
+
+

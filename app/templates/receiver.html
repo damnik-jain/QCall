@@ -1,0 +1,42 @@
+{% load static %}
+<html>
+  <head>
+    <title>Notifier</title>
+    <script src="{% static 'js/websocketbridge.js' %}" type="text/javascript"></script>
+  </head>
+  <body>
+    <h1>Receiver</h1>
+    <script>
+      
+      function sendMessage(message){
+          document.ws.send(message);
+      }
+
+      let res_bkp = null;
+      
+    document.addEventListener('DOMContentLoaded', function() {
+      const webSocketBridge = new channels.WebSocketBridge();
+      webSocketBridge.connect('ws://localhost:9000/ws/');
+      webSocketBridge.listen(function(action, stream) {
+        if(action=="receiverorsender"){
+          webSocketBridge.send({"id":"1123213", "action":"addme", "type":"receiver"});
+          alert("You will now receive message");
+        }
+        res_bkp = action;
+        if(action.type="events.alarm"){
+          var obj=null;
+          try {
+            obj = JSON.parse(action.message);
+          }
+          catch(err) {
+            console.log("error parsing json");
+          }
+          console.log("Object received",obj);
+        }
+        console.log("Received MEssage :", action);
+      })
+      document.ws = webSocketBridge; /* for debugging */
+    })
+    </script>
+  </body>
+</html>
