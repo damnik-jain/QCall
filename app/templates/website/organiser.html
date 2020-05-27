@@ -20,7 +20,7 @@
   }
 
   .object-overlay {
-    width: 100px;height: 100px;position: absolute;z-index: 10;
+    max-width: 300px;position: absolute;z-index: 10;
   }
 
   .pr-item {
@@ -90,9 +90,6 @@
                         <div class="object-item">
                           <img data-id="pentagon" src="{% static 'object/pentagon.png'%}"  class="object-image">
                         </div>
-                        <div class="object-item">
-                          <img data-id="neuralnetwork" src="{% static 'object/neuralnetwork.png'%}"  class="object-image">
-                        </div>  
                       </div>
                       <br><br>
                       <input type="text" value="" placeholder="Image URL" id="object-add-url" style="max-width: 150px;">
@@ -189,6 +186,8 @@ function loadCanvas(id){
 
 function removeAllObject(event){
   operations = {};
+  $('#object-tags').html('');
+  $('#cancel-tags').html('');
   syncOperations(operations);
 }
 
