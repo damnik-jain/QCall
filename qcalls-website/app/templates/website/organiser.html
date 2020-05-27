@@ -1,0 +1,357 @@
+{% extends "website/base-withoutnav.html" %}
+{% load static %}
+
+
+{% block actualbody %}
+{% include "website/websocket.html" %}
+
+<script src="https://cdn.rawgit.com/mattdiamond/Recorderjs/08e7abd9/dist/recorder.js"></script>
+<script src="{% static 'js/websocketbridge.js' %}" type="text/javascript"></script>
+<style type="text/css">
+  .object-item {
+    width: 100px;
+    position: relative;left: 50%;transform: translate(-50%);
+    margin-bottom: 20px;
+  }
+  .object-image {
+    width: 100px;
+    position: relative;left: 50%;transform: translate(-50%);
+    margin-bottom: 20px;
+  }
+
+  .object-overlay {
+    max-width: 300px;position: absolute;z-index: 10;
+  }
+
+  .pr-item {
+    margin-bottom: 20px;
+  }
+  .pr-label {
+    font-size: 20px;
+  }
+  .pr-icon {
+    width: 40px;height: 40px;
+  }
+
+/* width */
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  box-shadow: inset 0 0 5px grey; 
+  border-radius: 10px;
+}
+ 
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: #0BC0ED; 
+  border-radius: 10px;
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  background: #0C9CBF; 
+}
+
+</style>
+
+  <div id="transcript-bg" style="width: 100vw;height: 100vh;position: absolute;top: 0;left: 0;background-color: rgba(0,0,0,0.3);z-index: 900;display: none;">
+
+  </div>
+    <div id="transcript-result" style="background-color:white;position: absolute;top: 50vh;left: 50vw;transform: translate(-50%,-50%);width: 50vw;height: 50vh;border: 2px solid gray;padding: 20px;z-index: 1000;display: none;overflow-y:auto;">
+      <button id="transcript-close" style="position: absolute;top: 0;right: 0;margin: 10px;">X</button>
+      <h3 id="transcript-header">Transcript</h3>
+      <p id="transcript-value">Loading...</p>
+      </div>
+    
+     <!-- BLOG -->
+     <section class="blog" style="padding: 30px 10px 0px 10px;">
+          <div class="container">
+               <div id="main-div" class="row" style="min-height: 30vh;">
+
+
+                    <div id="object-tab" class="col-lg-2 col-md-2 col-12" style="background-color: white;padding: 0px 30px;min-width: 150px;">
+                        
+                        <p style="text-align: center;">Objects</p>
+                        <div style="max-height: 65vh; overflow: auto;min-width: 120px;" id="object-actual-tab">
+                        <br>
+                        <div class="object-item">
+                          <img data-id="digestive" src="{% static 'object/digestive.png'%}" class="object-image">
+                        </div>
+                        
+                        <div class="object-item">
+                          <img data-id="heart" src="{% static 'object/heart.png'%}"  class="object-image">
+                        </div>
+                        <div class="object-item">
+                          <img data-id="crystal" src="{% static 'object/crystal.png'%}"  class="object-image">
+                        </div>
+                        <div class="object-item">
+                          <img data-id="pentagon" src="{% static 'object/pentagon.png'%}"  class="object-image">
+                        </div>
+                      </div>
+                      <br><br>
+                      <input type="text" value="" placeholder="Image URL" id="object-add-url" style="max-width: 150px;">
+                      <button onclick="addObjectImage()" class="btn btn-info" id="object-add-button">Add</button><br>
+                        <button class="btn btn-primary" id="removeObject" style="float: left;position: relative;top: 15px;">Remove All</button>
+
+                    </div>
+
+
+                    <div id="videocontainer" class="col-lg-7 col-md-7 col-12" style="max-height: 70vh;">
+                     <!-- <canvas id="canvasOutput" class="img-fluid" alt="blog" style="float:left;width:640px;height: 480px;"></canvas> -->
+                     <img src="http://localhost:9000/video_feed" id="canvasOutput" class="img-fluid" alt="Video-server" style="float:left;">
+                     <span id="object-tags"></span>
+                     <span id="cancel-tags"></span>
+                    </div>
+
+
+
+                    <div class="col-lg-3 col-md-3 col-12" style="" id="pr-container">
+
+                      <p style="width: 100%;text-align: center;">Link to Join: 
+                        <a style="color: blue;"  target="_blank" href="http://localhost:8000{% url 'join' %}?mid={{mid}}">http://localhost:8000{% url 'join' %}?{{mid}}</a></p>
+                      <p style="text-align: center;" id="pr-header">Participants (0)
+                        </p>
+                      <div style="max-height: 65vh; overflow: auto;min-width: 120px;" id="pr-div">
+                              
+
+                      </div>  
+
+                    </div>
+
+               </div>
+          </div>
+     </section>
+
+
+<div id="controls" style="float: right;margin-right: 20px;position: relative;top: -10px;">
+   <button id="pauseButton" disabled style="display: none;"></button>
+  <button id="startAndStop" class="btn btn-success" style="margin-right: 20px; ">Start Meeting</button>
+   <button id="stopButton" class="btn btn-danger" disabled>End Meeting</button>
+</div>
+<div id="recordingsList" style="float:right;"></div>
+<div style="height: 20vh;float: both;"></div>
+<textarea class="code" rows="29" cols="100" id="codeEditor" spellcheck="false" style="display: none;">
+</textarea>
+
+<p class="err" id="errorMessage"></p>
+<script src="https://webrtc.github.io/adapter/adapter-5.0.4.js" type="text/javascript"></script>
+<script type="text/javascript">
+const email = "{{id}}";
+
+function syncOperations(opr){
+  $.post( "{% url 'syncOperations' %}", { email: email, operations: JSON.stringify(operations) }, function( data ) {
+    console.log( data );
+  });
+}
+
+const FPS = 10;
+let bkp = [];
+</script>
+<!-- <script src="{% static 'js/utils.js' %}" type="text/javascript"></script> -->
+
+<script type="text/javascript">
+
+let operations = {};
+syncOperations(operations);
+function printcrystal(event) {
+  let clientX = parseInt(document.getElementById("value1").value);
+  let clientY = parseInt(document.getElementById("value2").value);
+}
+function printheart(event) {
+  let clientX = parseInt(document.getElementById("value1").value);
+  let clientY = parseInt(document.getElementById("value2").value);
+}
+function printmathproblem(event) {
+  let clientX = parseInt(document.getElementById("value1").value);
+  let clientY = parseInt(document.getElementById("value2").value);
+}
+function printneuralnetwork(event) {
+  let clientX = parseInt(document.getElementById("value1").value);
+  let clientY = parseInt(document.getElementById("value2").value);
+}
+function printpentagon(event) {
+  let clientX = parseInt(document.getElementById("value1").value);
+  let clientY = parseInt(document.getElementById("value2").value);
+}
+
+function loadCanvas(id){
+  var c = document.getElementById(id);
+  var ctx = c.getContext("2d");
+  var img = document.getElementById(id+"image");
+  ctx.drawImage(img, 1, 1);
+}
+
+function removeAllObject(event){
+  operations = {};
+  $('#object-tags').html('');
+  $('#cancel-tags').html('');
+  syncOperations(operations);
+}
+
+// let streaming = false;
+// let videoInput = document.getElementById('videoInput');
+// let startAndStop = document.getElementById('startAndStop');
+// let canvasOutput = document.getElementById('canvasOutput');
+// let canvasContext = canvasOutput.getContext('2d');
+
+// startAndStop.addEventListener('click', () => {
+//     if (!streaming) {
+//         utils.clearError();
+//         utils.startCamera('qvga', onVideoStarted, 'videoInput');
+//         this.onVideoStarted();
+//     } else {
+//         utils.stopCamera();
+//         onVideoStopped();
+//     }
+// });
+
+// function onVideoStarted() {
+//     document.getElementById("videoInput").play();
+//     streaming = true;
+//     startAndStop.innerText = 'Stop';
+//     videoInput.width = videoInput.videoWidth;
+//     videoInput.height = videoInput.videoHeight;
+//     utils.executeCode('codeEditor');
+// }
+
+// function onVideoStopped() {
+//     document.getElementById("videoInput").pause();
+//     streaming = false;
+//     canvasContext.clearRect(0, 0, canvasOutput.width, canvasOutput.height);
+//     startAndStop.innerText = 'Start';
+// }
+
+// utils.loadOpenCv(() => {
+//     startAndStop.removeAttribute('disabled');
+// });
+
+</script>
+
+<script>
+let image_selected = "-1";
+let image_selected_url = "";
+
+
+$(document).ready(function() {
+  document.getElementById("removeObject").addEventListener("click", removeAllObject);
+
+  $(".object-image").click(function(e){
+    image_selected = $(this).attr("data-id");
+    image_selected_url = $(this).attr("src");
+    console.log($(this).attr("data-id"));
+    console.log($(this).attr("src"));
+    $(".object-image").css("border", "none");
+    $(this).css("border", "2px solid blue");
+  });
+
+  $("#canvasOutput").click(function(e){
+    let exactX = (e.pageX - $(this).offset().left);
+    let exactY = (e.pageY - $(this).offset().top);
+    console.log(image_selected);
+    console.log(image_selected_url);
+    console.log(exactX);
+    console.log(exactY);
+    if(image_selected!="-1"){
+      operations[image_selected] = ["object", exactX, exactY, exactX, exactY,image_selected_url , -1];  
+    }
+    syncOperations(operations);
+  });
+
+  $.getScript("{% static 'js/apprecorder.js' %}")
+
+});
+
+function removeObject(e){
+  // alert('removeing object'+$(e).attr('data-remove'));
+  delete operations[$(e).attr('data-id')];
+  syncOperations(operations);
+  $('#videocontainer [data-remove='+$(e).attr('data-remove')+']').remove();
+}
+
+
+const OBJECT_FPS = 2000;
+function processObject(){
+  if(addObject_flag){
+    console.log("processObject");
+    let begin = Date.now();
+    let i = 0;
+    let ocopy = JSON.parse(JSON.stringify(operations));
+    $("#object-tags .object-overlay").each(function( index ) {
+      console.log("Removing: "+$(this).attr("data-id"));
+      console.log($(this).attr("data-id")+"    --   "+ocopy.hasOwnProperty($(this).attr("data-id")));
+      if(ocopy.hasOwnProperty($(this).attr("data-id"))){
+        delete ocopy[$(this).attr("data-id")]; 
+      }else{
+        $("#videocontainer [data-id="+$(this).attr("data-id")+"]").remove()
+      }
+    });
+    console.log(ocopy);
+    for (var key in ocopy) {
+      let obj = ocopy[key];
+      let ide = key+parseInt(obj[1])+parseInt(obj[2]);
+      $("#object-tags").append("<img src='"+obj[5]+"' class='object-overlay' style='top:"+obj[2]+"px;left:"+obj[1]+"px;' data-remove='"+ide+"' data-id='"+key+"' >");
+      $("#cancel-tags").append("<p src='"+obj[5]+"' class='object-overlay' style='top:"+obj[2]+"px;left:"+obj[1]+"px;z-index:100;' data-remove='"+ide+"' data-id='"+key+"' onclick='removeObject(this);' >X</p>");
+    }
+
+    setTimeout(processObject, OBJECT_FPS);
+  }
+}
+
+// schedule the first one.
+setTimeout(processObject, 0);
+let addObject_flag = true;
+
+
+
+// schedule the first one.
+const PARTICIPANT_FPS = 2000;
+function getParticipant(){
+  console.log("getParticipant()");
+  $.get( "{% url 'getParticipants' %}?email="+email, function( data ) {
+      pr = JSON.parse(data);
+      console.log("Participants");
+      console.log(pr);
+      $("#pr-div").html('');
+      for(var i in pr){
+        $("#pr-div").append("<div  class='pr-item'> <img src='{% static 'images/user.png' %}' class='img-fluid pr-icon' alt='user'> </img> <span class='text-primary pr-label'> "+pr[i]+" </span> </div>");
+      }
+      $("#pr-header").text("Participant ("+pr.length+")");
+  });
+  // schedule the next one.
+  setTimeout(getParticipant, PARTICIPANT_FPS);
+}
+setTimeout(getParticipant, 0);
+
+function showTranscriptLoader(){
+  $("#transcript-result").show();
+  $("#transcript-bg").show();
+  $("#transcript-value").text("Loading...");
+}
+function removeMeetingElement(){
+  $("#pr-container").remove();
+  $("#videocontainer").remove();
+  $("#object-tab").remove();
+  $("#main-div").html('<h1>The Meeting has ended</h1><br><br><br><br>');
+}
+function addObjectImage(){
+  let url = $("#object-add-url").val();
+  $('#object-actual-tab').append("<div class='object-item'><img data-id='"+url+"' src='"+url+"' class='object-image'></div>");
+  $(".object-image").click(function(e){
+    image_selected = $(this).attr("data-id");
+    image_selected_url = $(this).attr("src");
+    console.log($(this).attr("data-id"));
+    console.log($(this).attr("src"));
+    $(".object-image").css("border", "none");
+    $(this).css("border", "2px solid blue");
+  });
+
+}
+
+</script>
+
+{% endblock %}
+
+
