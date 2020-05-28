@@ -1,8 +1,6 @@
 
 # QCalls
 Conduct meetings as good as live <br>
-Youtube Demo: https://www.youtube.com/watch?v=6Yv2qy8kW2c&feature=youtu.be
-
 
 ## Installation Instructions
 There are two folder in the project as mentioned below
