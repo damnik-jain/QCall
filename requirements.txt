@@ -38,6 +38,6 @@ widgetsnbextension==3.5.1
 ibm-cloud-sdk-core==2.0.4
 ibm-watson==4.4.1
 gensim==3.8.3
-nltk==3.3
+nltk==3.4.5
 opencv-contrib-python
 imutils
