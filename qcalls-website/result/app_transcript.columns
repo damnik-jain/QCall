@@ -1,0 +1,5 @@
+"name","type","length","leftDigits","rightDigits"
+"transcript","STRING","71","0","0"
+"audio_file","STRING","43","0","0"
+"timestamp","STRING","10","0","0"
+"meeting_id","INTEGER","2","2","0"

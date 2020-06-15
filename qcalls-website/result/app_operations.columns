@@ -1,0 +1,3 @@
+"name","type","length","leftDigits","rightDigits"
+"email","STRING","28","0","0"
+"operations","STRING","78","0","0"

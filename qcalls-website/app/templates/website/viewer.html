@@ -21,7 +21,7 @@
   }
 
   .object-overlay {
-    max-width: 300px;position: absolute;z-index: 10;
+    max-width: 250px;position: absolute;z-index: 10;
   }
 
   .pr-item {
@@ -71,10 +71,11 @@
 
      <!-- BLOG -->
      <section class="blog" style="padding: 30px 10px;">
-          <div class="container">
-               <div id="main-div" class="row" style="min-height: 30vh;">
+         <div class="container" style="padding: 0px;margin: 0px;">
+          
+               <div id="main-div" class="row" style="min-height: 30vh;width: 98vw;padding: 0vw 3vw;">
 
-                    <div id="object-tab" class="col-lg-2 col-md-2 col-12" style="background-color: white;padding: 0px 30px;min-width: 150px;display: none;">
+                    <div id="object-tab" class="col-lg-2 col-md-2 col-12" style="background-color: white;padding: 0px 30px;min-width: 150px;visibility: hidden;max-width: 200px;display: none;">
                     
                        
                         <p style="text-align: center;">Objects</p>
@@ -98,27 +99,25 @@
                     </div>
 
 
-                    <div id="videocontainer" class="col-lg-7 col-md-7 col-12" style="max-height: 70vh;">
-                     <!-- <canvas id="canvasOutput" class="img-fluid" alt="blog" style="float:left;width:640px;height: 480px;"></canvas> -->
-                     <img src="http://localhost:9000/video_feed" id="canvasOutput" class="img-fluid" alt="blog" style="float:left;display: none;">
+                    <!-- <div id="videocontainer" class="col-lg-7 col-md-7 col-12" style="max-height: 70vh;"> -->
+                    <div id="videocontainer" style="margin-left:20px;width: 55%;float: left;max-height: 70vh;">
+
+                     <img src="localhost:9000/video_feed" id="canvasOutput" class="img-fluid" alt="Video Streamer" style="float:left;display: none;">
+                     
                      <p id="video-wait">Please wait the meeting is starting soon</p>
                      <span id="object-tags"></span>
                      <span id="cancel-tags"></span>
                     </div>
 
 
-                  <div class="col-lg-4 col-md-4 col-12" style="" id="pr-container">
-                     
+                  <!-- <div class="col-lg-4 col-md-4 col-12" style="" id="pr-container"> -->
+                     <div  style="width: 25%;float: left;margin-left:20px;" id="pr-container">
                       <p style="text-align: center;"  id="pr-header">Participants (0)</p>
                         <br>
                         <br>
                       <div style="max-height: 65vh; overflow-y: auto;min-width: 120px;" id="pr-div">
-                              
-
                       </div>  
-
-
-               </div>
+                  </div>
           </div>
      </section>
 <br><br><br><br><br>
@@ -178,8 +177,10 @@ function processObject(){
     for (var key in ocopy) {
       let obj = ocopy[key];
       let ide = key+parseInt(obj[1])+parseInt(obj[2]);
-      $("#object-tags").append("<img src='"+obj[5]+"' class='object-overlay' style='top:"+obj[2]+"px;left:"+obj[1]+"px;' data-remove='"+ide+"' data-id='"+key+"' >");
-      $("#cancel-tags").append("<p src='"+obj[5]+"' class='object-overlay' style='top:"+obj[2]+"px;left:"+obj[1]+"px;z-index:100;' data-remove='"+ide+"' data-id='"+key+"' onclick='removeObject(this);' >X</p>");
+      let exactX = obj[1]-obj[3]+$("#videocontainer").offset().left;
+      let exactY = obj[2]-obj[4]+$("#videocontainer").offset().top;
+      $("#object-tags").append("<img src='"+obj[5]+"' class='object-overlay' style='position:absolute;top:"+(exactY)+"px;left:"+(exactX)+"px;' data-remove='"+ide+"' data-id='"+key+"' >");
+      // $("#cancel-tags").append("<p src='"+obj[5]+"' class='object-overlay' style='top:"+exactY+"px;left:"+exactX+"px;z-index:100;' data-remove='"+ide+"' data-id='"+key+"' onclick='removeObject(this);' >X</p>");
     }
     if(meetingStatus){
       setTimeout(processObject, OBJECT_FPS);

@@ -77,9 +77,11 @@ function startRecording() {
 
 	}).catch(function(err) {
 	  	//enable the record button if getUserMedia() fails
-    	recordButton.disabled = false;
-    	stopButton.disabled = true;
-    	pauseButton.disabled = true
+	  	// console.log("Media failed");
+	  	// console.log(err);
+    	// recordButton.disabled = false;
+    	// stopButton.disabled = true;
+    	// pauseButton.disabled = true
 	});
 }
 
@@ -165,7 +167,6 @@ function createDownloadLink(blob) {
 	var upload = document.createElement('a');
 	upload.href="#";
 	upload.innerHTML = "<button class='btn btn-primary' style='position:relative;transform:translateY(-50%);'>Transcript</button>";
-
 
 	upload.addEventListener("click", function(event){
 		showTranscriptLoader();

@@ -20,7 +20,7 @@
   }
 
   .object-overlay {
-    max-width: 300px;position: absolute;z-index: 10;
+    max-width: 250px;position: absolute;z-index: 10;
   }
 
   .pr-item {
@@ -67,14 +67,15 @@
       </div>
     
      <!-- BLOG -->
-     <section class="blog" style="padding: 15px 10px 0px 10px;">
-          <div class="container">
+     <section class="blog" style="padding: 30px 10px 0px 10px;">
+          <div class="container" style="padding: 0px;margin: 0px;">
           
-               <div id="main-div" class="row" style="min-height: 30vh;">
+               <div id="main-div" class="row" style="min-height: 30vh;width: 98vw;padding: 0vw 3vw;">
 
 
                     <!-- Object Section -->
-                    <div id="object-tab" class="col-lg-2 col-md-2 col-12" style="background-color: white;min-width: 150px;">
+                    <!-- <div id="object-tab" class="col-lg-2 col-md-2 col-12" style="background-color: white;min-width: 150px;"> -->
+                    <div id="object-tab" style="width:20%;float:left;background-color: white;min-width: 150px;max-width: 200px;">
                         
                         <div style="padding: 0px 30px;">
                           <p style="text-align: center;">Objects</p>
@@ -99,29 +100,30 @@
 
                       <br>
 
-                      <div class="input-group mb-3">
+                      <div class="input-group">
                         <div class="input-group-append">
                           <button onclick="addObjectImage()"  class="btn btn-outline-secondary btn-info" id="object-add-button" style="float: left;color: white;">Add</button>
                         </div>
                         <input type="text" value="" placeholder="Image URL" id="object-add-url" style="max-width: 150px;" class="form-control">
                       </div>
 
-<!-- 
+
                       <div class="input-group">
                         <div class="input-group-append">
-                          <button onclick="addObjectImage()"  class="btn btn-outline-secondary btn-info" id="object-add-button" style="float: left;color: white;">Resize</button>
+                          <button onclick="adjustOpacity()" class="btn btn-outline-secondary btn-info" id="object-add-button" style="float: left;color: white;" >Opactiy</button>
                         </div>
-                        <input type="text" value="" placeholder="%" id="object-add-url" style="max-width: 150px;" class="form-control">
-                      </div> -->
+                        <input type="text" id="opacity-value" value="" placeholder="%" id="object-add-url" style="max-width: 150px;" class="form-control">
+                      </div>
 
                       <button class="btn btn-primary" id="removeObject" style="float: left;position: relative;top: 15px;">Remove All</button>
 
                     </div>
 
                     <!-- Video Section -->
-                    <div id="videocontainer" class="col-lg-7 col-md-7 col-12" style="max-height: 70vh;">
-                     <!-- <canvas id="canvasOutput" class="img-fluid" alt="blog" style="float:left;width:640px;height: 480px;"></canvas> -->
-                     <img src="http://localhost:9000/video_feed" id="canvasOutput" class="img-fluid" alt="Video-server" style="float:left;">
+                    <!-- <div id="videocontainer" class="col-lg-8 col-md-8 col-12" style="max-height: 70vh;"> -->
+                    <div id="videocontainer" style="margin-left:20px;width: 55%;float: left;max-height: 70vh;">
+
+                     <img src="http://localhost:9000/video_feed" id="canvasOutput" class="img-fluid" alt="Video Streamer" style="float:left;">
                      <span id="object-tags"></span>
                      <span id="cancel-tags"></span>
                     </div>
@@ -129,10 +131,11 @@
 
 
                     <!-- Participants Section -->
-                    <div class="col-lg-3 col-md-3 col-12" style="" id="pr-container">
+                    <!-- <div class="col-lg-2 col-md-2 col-12" style="" id="pr-container"> -->
+                    <div  style="width: 25%;float: left;margin-left:20px;" id="pr-container">
 
                       <p style="width: 100%;text-align: center;">Link to Join: 
-                        <a style="color: blue;"  target="_blank" href="http://localhost:8000{% url 'join' %}?mid={{mid}}">http://localhost:8000{% url 'join' %}?{{mid}}</a></p>
+                        <a style="color: blue;"  target="_blank" href="http://localhost:8000{% url 'join' %}?mid={{mid}}">Click here</a></p>
                       <p style="text-align: center;" id="pr-header">Participants (0)
                         </p>
                       <div style="max-height: 65vh; overflow: auto;min-width: 120px;" id="pr-div">
@@ -213,42 +216,15 @@ function removeAllObject(event){
   syncOperations(operations);
 }
 
-// let streaming = false;
-// let videoInput = document.getElementById('videoInput');
-// let startAndStop = document.getElementById('startAndStop');
-// let canvasOutput = document.getElementById('canvasOutput');
-// let canvasContext = canvasOutput.getContext('2d');
-
-// startAndStop.addEventListener('click', () => {
-//     if (!streaming) {
-//         utils.clearError();
-//         utils.startCamera('qvga', onVideoStarted, 'videoInput');
-//         this.onVideoStarted();
-//     } else {
-//         utils.stopCamera();
-//         onVideoStopped();
-//     }
-// });
-
-// function onVideoStarted() {
-//     document.getElementById("videoInput").play();
-//     streaming = true;
-//     startAndStop.innerText = 'Stop';
-//     videoInput.width = videoInput.videoWidth;
-//     videoInput.height = videoInput.videoHeight;
-//     utils.executeCode('codeEditor');
-// }
-
-// function onVideoStopped() {
-//     document.getElementById("videoInput").pause();
-//     streaming = false;
-//     canvasContext.clearRect(0, 0, canvasOutput.width, canvasOutput.height);
-//     startAndStop.innerText = 'Start';
-// }
-
-// utils.loadOpenCv(() => {
-//     startAndStop.removeAttribute('disabled');
-// });
+function adjustOpacity(){
+  let opac = $("#opacity-value").val();
+  $("#object-tags .object-overlay").css("opacity", opac);
+  
+  // $("#object-tags .object-overlay").each(function( index ) {
+  //     $(this).css()
+  
+  //   });
+}
 
 </script>
 
@@ -270,14 +246,18 @@ $(document).ready(function() {
   });
 
   $("#canvasOutput").click(function(e){
-    let exactX = (e.pageX - $(this).offset().left);
-    let exactY = (e.pageY - $(this).offset().top);
-    console.log(image_selected);
-    console.log(image_selected_url);
-    console.log(exactX);
-    console.log(exactY);
+    // let  = (e.pageX);
+    // let  = (e.pageY);
+    // let exactX = (e.pageX - $(this).offset().left);
+    // let exactY = (e.pageY - $(this).offset().top);
+    let exactX = (e.pageX);
+    let exactY = (e.pageY);
+    // console.log(image_selected);
+    // console.log(image_selected_url);
+    // console.log(exactX);
+    // console.log(exactY);
     if(image_selected!="-1"){
-      operations[image_selected] = ["object", exactX, exactY, exactX, exactY,image_selected_url , -1];  
+      operations[image_selected] = ["object", exactX, exactY, $(this).offset().left, $(this).offset().top,image_selected_url , -1];  
     }
     syncOperations(operations);
   });
@@ -314,8 +294,8 @@ function processObject(){
     for (var key in ocopy) {
       let obj = ocopy[key];
       let ide = key+parseInt(obj[1])+parseInt(obj[2]);
-      $("#object-tags").append("<img src='"+obj[5]+"' class='object-overlay' style='top:"+obj[2]+"px;left:"+obj[1]+"px;' data-remove='"+ide+"' data-id='"+key+"' >");
-      $("#cancel-tags").append("<p src='"+obj[5]+"' class='object-overlay' style='top:"+obj[2]+"px;left:"+obj[1]+"px;z-index:100;' data-remove='"+ide+"' data-id='"+key+"' onclick='removeObject(this);' >X</p>");
+      $("#object-tags").append("<img src='"+obj[5]+"' class='object-overlay' style='position:absolute;top:"+obj[2]+"px;left:"+obj[1]+"px;' data-remove='"+ide+"' data-id='"+key+"' >");
+      $("#cancel-tags").append("<p src='"+obj[5]+"' class='object-overlay' style='top:"+obj[2]+"px;left:"+obj[1]+"px;z-index:100;color:white;font-weight:900;' data-remove='"+ide+"' data-id='"+key+"' onclick='removeObject(this);' >x</p>");
     }
     if(meetingStatus){
       setTimeout(processObject, OBJECT_FPS);
@@ -375,6 +355,14 @@ function addObjectImage(){
   });
 
 }
+
+// function resizeObject(){
+//   var val = $("#resize-value").val();
+//   var maxWidth = 300; // Max width for the image
+//   var ratio = 0;  // Used for aspect ratio
+//   var width = $(this).width();    // Current image width
+//   var new_width = val*width/100;
+// }
 
 </script>
 

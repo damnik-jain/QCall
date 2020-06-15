@@ -1,0 +1,4 @@
+"name","type","length","leftDigits","rightDigits"
+"session_key","STRING","32","0","0"
+"session_data","STRING","364","0","0"
+"expire_date","STRING","10","0","0"

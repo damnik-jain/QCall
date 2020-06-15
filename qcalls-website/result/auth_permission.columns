@@ -1,0 +1,5 @@
+"name","type","length","leftDigits","rightDigits"
+"id","INTEGER","2","2","0"
+"content_type_id","INTEGER","2","2","0"
+"codename","STRING","19","0","0"
+"name","STRING","23","0","0"
