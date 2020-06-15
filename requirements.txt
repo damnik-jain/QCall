@@ -2,7 +2,7 @@ audioread==2.1.8
 certifi==2018.8.24
 cryptography==2.3
 decorator==4.4.0
-Django==2.1.1
+Django==2.2.13
 django-heroku==0.3.1
 djangorestframework==3.8.2
 Flask==1.0.2
