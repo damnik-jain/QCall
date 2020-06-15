@@ -1,0 +1,417 @@
+{% extends "website/base-withoutnav.html" %}
+
+{% load static %}
+
+
+{% block actualbody %}
+
+{% include "website/websocket.html" %}
+<script src="{% static 'js/websocketbridge.js' %}" type="text/javascript"></script>
+<style type="text/css">
+  .object-item {
+    width: 100px;
+    position: relative;left: 50%;transform: translate(-50%);
+    margin-bottom: 20px;
+  }
+  .object-image {
+    width: 100px;
+    position: relative;left: 50%;transform: translate(-50%);
+    margin-bottom: 20px;
+  }
+
+  .object-overlay {
+    width: 100px;height: 100px;position: absolute;z-index: 10;
+  }
+
+/* width */
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  box-shadow: inset 0 0 5px grey; 
+  border-radius: 10px;
+}
+ 
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: #0BC0ED; 
+  border-radius: 10px;
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  background: #0C9CBF; 
+}
+
+</style>
+
+     <!-- BLOG -->
+     <section class="blog" style="padding: 30px 10px;">
+          <div class="container">
+               <div class="row">
+
+
+                    <div class="col-lg-2 col-md-2 col-12" style="background-color: white;padding: 0px 30px;min-width: 150px;">
+                        <!-- <p style="text-align: center;">Coordinates</p>
+                        <div style="position: relative;left: 50%;transform: translateX(-25%);">
+                          <input type="number" id="value1" value="100" placeholder="X Coord" style="max-width: 80px;">
+
+                          <input type="number" id="value2" value="100" placeholder="Y Coord" style="max-width: 80px;">
+
+                        </div> -->
+                        
+                        <p style="text-align: center;">Objects</p>
+                        <div style="max-height: 65vh; overflow: auto;min-width: 120px;">
+                        <br>
+                        <div class="object-item">
+                          <img data-id="mathproblem" src="{% static 'object/mathproblem.jpg'%}" class="object-image">
+                        </div>
+
+                        <div class="object-item">
+                          <img data-id="heart" src="{% static 'object/heart.jpg'%}"  class="object-image">
+                        </div>
+                        <div class="object-item">
+                          <img data-id="crystal" src="{% static 'object/crystal.png'%}"  class="object-image">
+                        </div>
+                        <div class="object-item">
+                          <img data-id="pentagon" src="{% static 'object/pentagon.png'%}"  class="object-image">
+                        </div>
+                        <div class="object-item">
+                          <img data-id="neuralnetwork" src="{% static 'object/neuralnetwork.png'%}"  class="object-image">
+                        </div>  
+                      </div>
+                      
+                    </div>
+
+
+                    <div id="videocontainer" class="col-lg-7 col-md-7 col-12" style="background-color: brown;max-height: 70vh;">
+                     <canvas id="canvasOutput" class="img-fluid" alt="blog" style="float:left;width:640px;height: 480px;"></canvas>
+                     <span id="object-tags"></span>
+                     <span id="cancel-tags"></span>
+                    </div>
+
+
+
+                    <div class="col-lg-3 col-md-3 col-12">
+                     
+                      <div class="blog-sidebar justify-content-center align-items-center" data-aos="fade-up" data-aos-delay="200" style="margin-bottom: 20px;">
+                        <video src="/static/song.mp4" class="img-fluid" alt="blog" style="width: 200px;height: 100px;background-color: green;">
+                        </video>
+                        <div class="blog-info">
+                          <h4 class="blog-category text-primary">
+                            Mihir Makwana
+                          </h4>
+                        </div>
+                      </div>
+                      <div class="blog-sidebar justify-content-center align-items-center" data-aos="fade-up" data-aos-delay="200" style="margin-bottom: 20px;">
+                        <video src="/static/song.mp4" class="img-fluid" alt="blog" style="width: 200px;height: 100px;background-color: green;">
+                        </video>
+                        <div class="blog-info">
+                          <h4 class="blog-category text-primary">
+                            Damnik Jain
+                          </h4>
+                        </div>
+                      </div>
+                       <div class="blog-sidebar justify-content-center align-items-center" data-aos="fade-up" data-aos-delay="200" style="margin-bottom: 20px;">
+                        <video src="/static/song.mp4" class="img-fluid" alt="blog" style="width: 200px;height: 100px;background-color: green;">
+                        </video>
+                        <div class="blog-info">
+                          <h4 class="blog-category text-primary">
+                            Ross Charvalo
+                          </h4>
+                        </div>
+                      </div>
+
+
+                    </div>
+
+               </div>
+          </div>
+     </section>
+<br><br><br><br><br>
+
+
+<!-- 
+
+<div style="position: absolute;top: 0px;left: 0px;">
+    <table cellpadding="0" cellspacing="0" width="0" border="0">
+    <tr>
+        <td>
+            <video id="videoInput" src="http://localhost:8000/static/time.mp4" width=320 height=240 style="display: none;"></video>
+        </td>
+        <td>
+            <canvas id="canvasOutput" width=320 height=240></canvas>
+        </td>
+        <td></td>
+        <td></td>
+    </tr>
+    <tr>
+        <td>
+            <div class="caption">videoInput</div>
+        </td>
+        <td>
+            <div class="caption">canvasOutput</div>
+        </td>
+        <td></td>
+        <td></td>
+    </tr>
+    </table>
+</div> -->
+
+<div class="control" style="position: relative;top: -80px;">
+<button id="removeObject">Remove Object</button>
+            <video id="videoInput" src="{% static 'time.mp4' %}" style=""></video>
+            <button id="startAndStop" disabled>Start</button></div>
+<textarea class="code" rows="29" cols="100" id="codeEditor" spellcheck="false" style="display: none;">
+</textarea>
+
+<p class="err" id="errorMessage"></p>
+<script src="https://webrtc.github.io/adapter/adapter-5.0.4.js" type="text/javascript"></script>
+<script type="text/javascript">
+const email = "{{id}}";
+
+function syncOperations(opr){
+  $.post( "{% url 'syncOperations' %}", { email: email, operations: JSON.stringify(operations) }, function( data ) {
+    console.log( data );
+  });
+}
+
+const FPS = 10;
+let bkp = [];
+</script>
+<script src="{% static 'js/utils.js' %}" type="text/javascript"></script>
+
+<script id="codeSnippet" type="text/code-snippet" style="width:1000px;height: 500px;display: none;">
+
+
+let video = document.getElementById('videoInput');
+let src = new cv.Mat(video.height, video.width, cv.CV_8UC4);
+let cap = new cv.VideoCapture(video);
+function processVideo() {
+        if (!streaming) {
+            // clean and stop.
+            src.delete();
+            return;
+        }
+        let begin = Date.now();
+        // start processing.
+        console.log(src);
+        bkp = src;
+        cap.read(src);
+        console.log("Calling sendformatmessage called llllll");
+        sendFormatMessage(src.data);
+
+    //cv.imshow('canvasOutput', src);
+
+    // schedule the next one.
+    let delay = 1000/FPS - (Date.now() - begin);
+    setTimeout(processVideo, delay);
+};
+
+// schedule the first one.
+setTimeout(processVideo, 0);
+
+</script>
+<script type="text/javascript">
+let utils = new Utils('errorMessage');
+let operations = {};
+syncOperations(operations);
+utils.loadCode('codeSnippet', 'codeEditor');
+function printcrystal(event) {
+  let clientX = parseInt(document.getElementById("value1").value);
+  let clientY = parseInt(document.getElementById("value2").value);
+  //oppush(['object',clientX-140,clientY,clientX-70+100,clientY+100, "crystal", 3]);
+}
+function printheart(event) {
+  let clientX = parseInt(document.getElementById("value1").value);
+  let clientY = parseInt(document.getElementById("value2").value);
+  //operations.push(['object',clientX-140,clientY,clientX-70+100,clientY+100, "heart", 3]);
+  
+}
+function printmathproblem(event) {
+  let clientX = parseInt(document.getElementById("value1").value);
+  let clientY = parseInt(document.getElementById("value2").value);
+  //operations.push(['object',clientX-140,clientY,clientX-70+100,clientY+100, "mathproblem", 3]);
+  
+}
+function printneuralnetwork(event) {
+  let clientX = parseInt(document.getElementById("value1").value);
+  let clientY = parseInt(document.getElementById("value2").value);
+  //operations.push(['object',clientX-140,clientY,clientX-70+100,clientY+100, "neuralnetwork", 3]);
+  
+}
+function printpentagon(event) {
+  let clientX = parseInt(document.getElementById("value1").value);
+  let clientY = parseInt(document.getElementById("value2").value);
+  //operations.push(['object',clientX-140,clientY,clientX-70+100,clientY+100, "pentagon", 3]);
+  
+}
+
+function loadCanvas(id){
+  var c = document.getElementById(id);
+  var ctx = c.getContext("2d");
+  var img = document.getElementById(id+"image");
+  ctx.drawImage(img, 1, 1);
+}
+
+function removeAllObject(event){
+  operations = {};
+  syncOperations(operations);
+}
+
+let streaming = false;
+let videoInput = document.getElementById('videoInput');
+let startAndStop = document.getElementById('startAndStop');
+let canvasOutput = document.getElementById('canvasOutput');
+let canvasContext = canvasOutput.getContext('2d');
+
+startAndStop.addEventListener('click', () => {
+    if (!streaming) {
+        utils.clearError();
+        utils.startCamera('qvga', onVideoStarted, 'videoInput');
+        this.onVideoStarted();
+    } else {
+        utils.stopCamera();
+        onVideoStopped();
+    }
+});
+
+function onVideoStarted() {
+    document.getElementById("videoInput").play();
+    streaming = true;
+    startAndStop.innerText = 'Stop';
+    videoInput.width = videoInput.videoWidth;
+    videoInput.height = videoInput.videoHeight;
+    utils.executeCode('codeEditor');
+}
+
+function onVideoStopped() {
+    document.getElementById("videoInput").pause();
+    streaming = false;
+    canvasContext.clearRect(0, 0, canvasOutput.width, canvasOutput.height);
+    startAndStop.innerText = 'Start';
+}
+
+utils.loadOpenCv(() => {
+    startAndStop.removeAttribute('disabled');
+});
+
+</script>
+
+<script>
+let image_selected = "";
+let image_selected_url = "";
+
+function sendFormatMessage(myarr){
+  console.log("Sendformatmessage called llllll");
+  console.log(myarr.toString());
+
+  var message = {} 
+  let video = document.getElementById('videoInput');
+  message["m"] = myarr.toString();
+  message["h"] = video.height;
+  message["w"] = video.width;
+  message["action"] = "broadcast";
+  document.ws.send(message);
+ 
+
+  // console.log("Sendformatmessage called llllll");
+  // console.log(myarr);
+  // var message = {}
+  // var myJSON = JSON.stringify(myarr); 
+  // message["message"] = myJSON;
+  // message["action"] = "broadcast";
+  // document.ws.send(message);
+
+}
+
+$(document).ready(function() {
+  document.getElementById("removeObject").addEventListener("click", removeAllObject);
+
+  $(".object-image").click(function(e){
+    image_selected = $(this).attr("data-id");
+    image_selected_url = $(this).attr("src");
+    console.log($(this).attr("data-id"));
+    console.log($(this).attr("src"));
+    $(".object-image").css("border", "none");
+    $(this).css("border", "2px solid blue");
+  });
+
+  $("#canvasOutput").click(function(e){
+    let exactX = (e.pageX - $(this).offset().left);
+    let exactY = (e.pageY - $(this).offset().top);
+    console.log(image_selected);
+    console.log(image_selected_url);
+    console.log(exactX);
+    console.log(exactY);
+    operations[image_selected] = ["object", exactX, exactY, exactX, exactY,image_selected_url , -1];
+    syncOperations(operations);
+  });
+
+  //Additional streaming sending code
+  const webSocketBridge = new channels.WebSocketBridge();
+  webSocketBridge.connect(websocket_url);
+  webSocketBridge.listen(function(action, stream) {
+    if(action=="receiverorsender"){
+      webSocketBridge.send({"id":email, "action":"addme", "type":"sender"});
+      alert("You can now send message");
+    }
+    console.log("RESPONSE:", action, stream);
+  })
+  document.ws = webSocketBridge; /* for debugging */
+
+
+});
+
+function removeObject(e){
+  // alert('removeing object'+$(e).attr('data-remove'));
+  delete operations[$(e).attr('data-id')];
+  syncOperations(operations);
+  $('#videocontainer [data-remove='+$(e).attr('data-remove')+']').remove();
+}
+
+
+const OBJECT_FPS = 1;
+function processObject(){
+
+  if(addObject_flag){
+    console.log("processObject");
+    let begin = Date.now();
+    let i = 0;
+    let ocopy = JSON.parse(JSON.stringify(operations));
+    $("#object-tags .object-overlay").each(function( index ) {
+      console.log("Removing: "+$(this).attr("data-id"));
+      console.log($(this).attr("data-id")+"    --   "+ocopy.hasOwnProperty($(this).attr("data-id")));
+      if(ocopy.hasOwnProperty($(this).attr("data-id"))){
+        delete ocopy[$(this).attr("data-id")]; 
+      }else{
+        $("#videocontainer [data-id="+$(this).attr("data-id")+"]").remove()
+      }
+    });
+    console.log(ocopy);
+    for (var key in ocopy) {
+      let obj = ocopy[key];
+      let ide = key+parseInt(obj[1])+parseInt(obj[2]);
+      $("#object-tags").append("<img src='"+obj[5]+"' class='object-overlay' style='top:"+obj[2]+"px;left:"+obj[1]+"px;' data-remove='"+ide+"' data-id='"+key+"' >");
+      $("#cancel-tags").append("<p src='"+obj[5]+"' class='object-overlay' style='top:"+obj[2]+"px;left:"+obj[1]+"px;z-index:100;' data-remove='"+ide+"' data-id='"+key+"' onclick='removeObject(this);' >X</p>");
+    }
+
+    // schedule the next one.
+    let delay = 1000/OBJECT_FPS - (Date.now() - begin);
+    setTimeout(processObject, delay);
+  }
+}
+
+// schedule the first one.
+setTimeout(processObject, 0);
+let addObject_flag = true;
+
+
+</script>
+
+
+{% endblock %}
+
+

@@ -1,0 +1,260 @@
+{% extends "website/base-withoutnav.html" %}
+{% load static %}
+
+
+{% block actualbody %}
+
+{% include "website/websocket.html" %}
+<script src="{% static 'js/websocketbridge.js' %}" type="text/javascript"></script>
+<script src="https://docs.opencv.org/3.4/opencv.js" type="text/javascript"></script>
+
+<style type="text/css">
+  .object-item {
+    width: 100px;
+    position: relative;left: 50%;transform: translate(-50%);
+    margin-bottom: 20px;
+  }
+  .object-image {
+    width: 100px;
+    position: relative;left: 50%;transform: translate(-50%);
+    margin-bottom: 20px;
+  }
+
+  .object-overlay {
+    max-width: 250px;position: absolute;z-index: 10;
+  }
+
+  .pr-item {
+    margin-bottom: 20px;
+  }
+  .pr-label {
+    font-size: 20px;
+  }
+  .pr-icon {
+    width: 40px;height: 40px;
+  }
+
+
+/* width */
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  box-shadow: inset 0 0 5px grey; 
+  border-radius: 10px;
+}
+ 
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: #0BC0ED; 
+  border-radius: 10px;
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  background: #0C9CBF; 
+}
+
+</style>
+
+
+  <div id="transcript-bg" style="width: 100vw;height: 100vh;position: absolute;top: 0;left: 0;background-color: rgba(0,0,0,0.3);z-index: 900;display: none;">
+
+  </div>
+    <div id="transcript-result" style="background-color:white;position: absolute;top: 50vh;left: 50vw;transform: translate(-50%,-50%);width: 50vw;height: 50vh;border: 2px solid gray;padding: 20px;z-index: 1000;display: none;">
+      <button id="transcript-close" style="position: absolute;top: 0;right: 0;margin: 10px;">X</button>
+      <h3 id="transcript-header">Transcript</h3>
+      <p id="transcript-value">Loading...</p>
+      </div>
+
+     <!-- BLOG -->
+     <section class="blog" style="padding: 30px 10px;">
+         <div class="container" style="padding: 0px;margin: 0px;">
+          
+               <div id="main-div" class="row" style="min-height: 30vh;width: 98vw;padding: 0vw 3vw;">
+
+                    <div id="object-tab" class="col-lg-2 col-md-2 col-12" style="background-color: white;padding: 0px 30px;min-width: 150px;visibility: hidden;max-width: 200px;display: none;">
+                    
+                       
+                        <p style="text-align: center;">Objects</p>
+                        <div style="max-height: 65vh; overflow: auto;min-width: 120px;" id="object-actual-tab">
+                        <br>
+                        <div class="object-item">
+                          <img data-id="digestive" src="{% static 'object/digestive.jpg'%}" class="object-image">
+                        </div>
+                        
+                        <div class="object-item">
+                          <img data-id="heart" src="{% static 'object/heart.jpg'%}"  class="object-image">
+                        </div>
+                        <div class="object-item">
+                          <img data-id="crystal" src="{% static 'object/crystal.png'%}"  class="object-image">
+                        </div>
+                        <div class="object-item">
+                          <img data-id="pentagon" src="{% static 'object/pentagon.png'%}"  class="object-image">
+                        </div>
+                      </div>
+                      
+                    </div>
+
+
+                    <!-- <div id="videocontainer" class="col-lg-7 col-md-7 col-12" style="max-height: 70vh;"> -->
+                    <div id="videocontainer" style="margin-left:20px;width: 55%;float: left;max-height: 70vh;">
+
+                     <img src="localhost:9000/video_feed" id="canvasOutput" class="img-fluid" alt="Video Streamer" style="float:left;display: none;">
+                     
+                     <p id="video-wait">Please wait the meeting is starting soon</p>
+                     <span id="object-tags"></span>
+                     <span id="cancel-tags"></span>
+                    </div>
+
+
+                  <!-- <div class="col-lg-4 col-md-4 col-12" style="" id="pr-container"> -->
+                     <div  style="width: 25%;float: left;margin-left:20px;" id="pr-container">
+                      <p style="text-align: center;"  id="pr-header">Participants (0)</p>
+                        <br>
+                        <br>
+                      <div style="max-height: 65vh; overflow-y: auto;min-width: 120px;" id="pr-div">
+                      </div>  
+                  </div>
+          </div>
+     </section>
+<br><br><br><br><br>
+
+
+<div class="control" style="position: relative;top: -80px;">
+<!-- <button id="removeObject">Remove Object</button> -->
+            <video id="videoInput"   width="320" height="240" style=""></video>
+            <!-- <button id="startAndStop" disabled>Start</button></div> -->
+<textarea class="code" rows="29" cols="100" id="codeEditor" spellcheck="false" style="display: none;">
+</textarea>
+
+<p class="err" id="errorMessage"></p>
+<script src="https://webrtc.github.io/adapter/adapter-5.0.4.js" type="text/javascript"></script>
+<script type="text/javascript">
+const email = "{{id}}";
+const FPS = 1;
+let operations = {};
+let meetingStatus = true;
+</script>
+<!-- <script src="{% static 'js/utils.js' %}" type="text/javascript"></script> -->
+
+
+<script>
+
+
+function removeObject(e){
+  // alert('removeing object'+$(e).attr('data-remove'));
+  delete operations[$(e).attr('data-id')];
+  $('#videocontainer [data-remove='+$(e).attr('data-remove')+']').remove();
+}
+
+let OBJECT_FPS = 2000;
+let broadcast_email = "{{broadcast}}";
+function processObject(){
+
+  if(addObject_flag){
+    $.get( "{% url 'getOperations' %}?email="+broadcast_email, function( data ) {
+      operations = JSON.parse(data);
+      console.log("Operations Fetched ",operations);
+    });
+    console.log("processObject");
+    let begin = Date.now();
+    let i = 0;
+    let ocopy = JSON.parse(JSON.stringify(operations));
+    $("#object-tags .object-overlay").each(function( index ) {
+      console.log("Removing: "+$(this).attr("data-id"));
+      console.log($(this).attr("data-id")+"    --   "+ocopy.hasOwnProperty($(this).attr("data-id")));
+      if(ocopy.hasOwnProperty($(this).attr("data-id"))){
+        delete ocopy[$(this).attr("data-id")]; 
+      }else{
+        $("#videocontainer [data-id="+$(this).attr("data-id")+"]").remove()
+      }
+    });
+
+    console.log(ocopy);
+    for (var key in ocopy) {
+      let obj = ocopy[key];
+      let ide = key+parseInt(obj[1])+parseInt(obj[2]);
+      let exactX = obj[1]-obj[3]+$("#videocontainer").offset().left;
+      let exactY = obj[2]-obj[4]+$("#videocontainer").offset().top;
+      $("#object-tags").append("<img src='"+obj[5]+"' class='object-overlay' style='position:absolute;top:"+(exactY)+"px;left:"+(exactX)+"px;' data-remove='"+ide+"' data-id='"+key+"' >");
+      // $("#cancel-tags").append("<p src='"+obj[5]+"' class='object-overlay' style='top:"+exactY+"px;left:"+exactX+"px;z-index:100;' data-remove='"+ide+"' data-id='"+key+"' onclick='removeObject(this);' >X</p>");
+    }
+    if(meetingStatus){
+      setTimeout(processObject, OBJECT_FPS);
+    }
+  }
+}
+
+// schedule the first one.
+setTimeout(processObject, 0);
+let addObject_flag = true;
+
+
+// schedule the first one.
+let PARTICIPANT_FPS = 2000;
+function getParticipant(){
+  console.log("getParticipant()");
+  $.get( "{% url 'getParticipants' %}?email="+"{{broadcast}}", function( data ) {
+      pr = JSON.parse(data);
+      console.log("Participants");
+      console.log(pr);
+      $("#pr-div").html('');
+      for(var i in pr){
+        $("#pr-div").append("<div  class='pr-item'> <img src='{% static 'images/user.png' %}' class='img-fluid pr-icon' alt='user'> </img> <span class='text-primary pr-label'> "+pr[i]+" </span> </div>");
+      }
+      $("#pr-header").text("Participant ("+pr.length+")");
+  });
+  // schedule the next one.
+  if(meetingStatus){
+    setTimeout(getParticipant, PARTICIPANT_FPS);
+  }
+}
+setTimeout(getParticipant, 0);
+
+function meetingEnded(){
+  $("#pr-container").remove();
+  $("#videocontainer").remove();
+  $("#object-tab").remove();
+  $("#main-div").html('<h1>The Meeting has ended</h1>');
+  $("#canvasOutput").remove();
+  meetingStatus = false;
+}
+
+let transcript;
+// schedule the first one.
+const MEETING_FPS = 1000;
+function getMeetingStatus(){
+  console.log("getMeetingStatus()");
+  $.get( "{% url 'getMeetingStatus' %}?mid="+"{{mid}}", function( data ) {
+      console.log(data);
+      res = data;
+      // res = JSON.parse(data);
+      console.log(res);
+      console.log("Response");
+      console.log(res["status"]);
+      if(res["status"]==0 ){
+        if(res["present"]==1 ){
+            transcript = res["transcript"];
+        }
+        meetingEnded();
+      }else if(res["status"]==2){
+        $("#canvasOutput").show();
+        $("#video-wait").hide();
+      }
+  });
+  if(meetingStatus){
+    setTimeout(getMeetingStatus, MEETING_FPS);
+  }
+}
+setTimeout(getMeetingStatus, 0);
+
+
+</script>
+
+
+{% endblock %}
+
+

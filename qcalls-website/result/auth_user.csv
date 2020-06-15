@@ -1,0 +1,8 @@
+"id","password","last_login","is_superuser","username","first_name","email","is_staff","is_active","date_joined","last_name"
+"1","pbkdf2_sha256$120000$xs9QrlXSQF0p$IEJZWu7dP1/VHEDM/YhWOf1XwPgUZfOM9rU8rsEDQHw=","2020-05-29","1","admin","","jaindamnik203@gmail.com","1","1","2020-05-26",""
+"2","pbkdf2_sha256$120000$7WSkp8FWcECp$e0EWG4nlkmi+HAtmIUydgnTqTOS03amKzDfoHG+xHys=","2020-05-28","0","d@gmail.com","","d@gmail.com","0","1","2020-05-27",""
+"3","pbkdf2_sha256$120000$kmCntVIf0Inl$C0U8IR85h8kJfia0UHw/c4Rc0F/HohFE5KcfPZ25Gi8=","2020-05-27","0","wjkdflak@gmakli.com","","wjkdflak@gmakli.com","0","1","2020-05-27",""
+"4","pbkdf2_sha256$120000$Kc81mDrY5uQq$6cvvSYYV2ZpJOG3//85WPQiwICalfIsn2JnXTdVK+74=","2020-05-27","0","wjkdflak@gmakli.fjaksdfjalsk","","wjkdflak@gmakli.fjaksdfjalsk","0","1","2020-05-27",""
+"5","pbkdf2_sha256$120000$9YM6SkSjb199$2/m35wdTGw0eKFdwkWvut+UhaI1iVI3pvl1SXVQgTY8=","2020-05-27","0","damnik@gmail.com","","damnik@gmail.com","0","1","2020-05-27",""
+"6","pbkdf2_sha256$120000$fsOHayVfCASL$NcbiW+MCTudhJSpkk/2Gm0Y0AGZGl1vKE4sxnQleebo=","2020-05-27","0","damnik1@gmail.com","","damnik1@gmail.com","0","1","2020-05-27",""
+"7","pbkdf2_sha256$120000$zErXU1j82dbN$M/xVtPjdmWthGcy8SPJw2Tpx/AjBtHIeLjgCvDVb1uU=","2020-05-27","0","yartik@gmail.com","","yartik@gmail.com","0","1","2020-05-27",""

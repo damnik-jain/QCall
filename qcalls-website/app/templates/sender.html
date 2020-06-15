@@ -1,0 +1,52 @@
+{% load static %}
+<html>
+  <head>
+    <title>Notifier</title>
+    <script src="{% static 'js/websocketbridge.js' %}" type="text/javascript"></script>
+  </head>
+  <body>
+    <h1>Sender</h1>
+    <input type="text" value="" name="" id="inval">
+    <button onclick="sendFormatMessage()">Submit</button>
+    <button onclick="sendMessage({'message':'hello'})">Hello</button>
+    <button onclick="sendMessage({'message':'Goodbye'})">Goodbye</button>
+    <button onclick="sendMessage({'message':'Respond'})">Respond</button>
+    <script>
+      function sendFormatMessage(){
+        // var obj_to_str =  
+            // { name: "GeeksForGeeks", city: "Noida", contact:2488 }; 
+        var mystring = [21323,31,23,213,1231,23,21321,312,321,3213,213,12,312,321,3213,231,321];
+        // var myblob = new Blob([mystring], {
+        //     type: 'text/plain'
+        // });
+        var obj_to_str = mystring;
+        var myJSON = JSON.stringify(obj_to_str); 
+        var message = {}
+        message["message"] = myJSON;
+        message["action"] = "broadcast";
+        document.ws.send(message);
+        console.log(message); 
+      }
+
+      function sendMessage(message){
+        console.log("Sending message");
+          message["action"] = "broadcast";
+          document.ws.send(message);
+          console.log(message);
+      }
+
+    document.addEventListener('DOMContentLoaded', function() {
+      const webSocketBridge = new channels.WebSocketBridge();
+      webSocketBridge.connect('ws://localhost:9000/ws/');
+      webSocketBridge.listen(function(action, stream) {
+        if(action=="receiverorsender"){
+          webSocketBridge.send({"id":"132213", "action":"addme", "type":"sender"});
+          alert("You can now send message");
+        }
+        console.log("RESPONSE:", action, stream);
+      })
+      document.ws = webSocketBridge; /* for debugging */
+    })
+    </script>
+  </body>
+</html>

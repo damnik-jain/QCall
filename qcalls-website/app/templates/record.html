@@ -1,0 +1,218 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Video Capture Example</title>
+<link href="js_example_style.css" rel="stylesheet" type="text/css" />
+</head>
+<body>
+
+<div style="position: absolute;top: 0px;left: 0px;">
+    <table cellpadding="0" cellspacing="0" width="0" border="0">
+    <tr>
+        <td>
+            <video id="videoInput" src="/static/time.mp4" width=320 height=240 style="display: none;"></video>
+        </td>
+        <td>
+            <canvas id="canvasOutput" width=320 height=240></canvas>
+        </td>
+        <td></td>
+        <td></td>
+    </tr>
+    <tr>
+        <td>
+            <div class="caption">videoInput</div>
+        </td>
+        <td>
+            <div class="caption">canvasOutput</div>
+        </td>
+        <td></td>
+        <td></td>
+    </tr>
+    </table>
+</div>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<canvas id="myCanvas" style="background-color:black;border:1px solid #d3d3d3;">
+</canvas>
+<h2>Video Capture Example</h2>
+<p>
+    Click <b>Start/Stop</b> button to start or stop the camera capture.<br>
+    The <b>videoInput</b> is a &lt;video&gt; element used as OpenCV.js input.
+    The <b>canvasOutput</b> is a &lt;canvas&gt; element used as OpenCv.js output.<br>
+    The code of &lt;textarea&gt; will be executed when video is started.
+    You can modify the code to investigate more.
+</p>
+<div>
+<div class="control"><button id="startAndStop" disabled>Start</button></div>
+<textarea class="code" rows="29" cols="100" id="codeEditor" spellcheck="false">
+</textarea>
+</div>
+f<p class="err" id="errorMessage"></p>
+<script src="https://webrtc.github.io/adapter/adapter-5.0.4.js" type="text/javascript"></script>
+<script src="{% static 'js/utils.js' %}" type="text/javascript"></script>
+<script id="codeSnippet" type="text/code-snippet" style="width:1000px;height: 500px;">
+let video = document.getElementById('videoInput');
+let src2canvas = document.getElementById("myCanvas");
+let src = new cv.Mat(video.height, video.width, cv.CV_8UC4);
+let cap = new cv.VideoCapture(video);
+const FPS = 10;
+function processVideo() {
+        if (!streaming) {
+            // clean and stop.
+            src.delete();
+            return;
+        }
+        let begin = Date.now();
+        // start processing.
+        cap.read(src);
+			
+
+		let i = 0;
+		for(i=0;i<operations.length;i++){
+			let temp = operations[i];
+			if(temp[0]=="rectangle"){
+				cv.rectangle(src, new cv.Point(temp[1], temp[2]), new cv.Point(temp[3],temp[4]), temp[5], temp[6]);
+			}else if(operations[i][0]=="line"){
+				cv.line(src, new cv.Point(temp[1], temp[2]), new cv.Point(temp[3],temp[4]), temp[5], temp[6]);
+			}else if(operations[i][0]=="object"){
+
+
+				let src2 = cv.imread("myCanvas");
+				let foi = src2.data;
+				let col_s2 = src2.cols;
+				let chn_s2 = src2.channels();
+				let col2 =0;
+				let row2 = 0;
+
+				let row = 3, col = 4;
+				let j = 0;
+				for(i=100;i<100+84;i++){
+					row = i;
+					col2 = 0;
+					row2 = row2+1;
+					for(j=100;j<100+86;j++){
+						col =j;
+						col2 = col2+1;
+
+						src.data[row * src.cols * src.channels() + col * src.channels()] = src2.data[row2 * col_s2 * chn_s2 + col2 * chn_s2];
+					    src.data[row * src.cols * src.channels() + col * src.channels() + 1] = src2.data[row2 * col_s2 * chn_s2 + col2 * chn_s2 + 1];
+					    src.data[row * src.cols * src.channels() + col * src.channels() + 2] = src2.data[row2 * col_s2 * chn_s2 + col2 * chn_s2 + 2];
+					    src.data[row * src.cols * src.channels() + col * src.channels() + 3] = src2.data[row2 * col_s2 * chn_s2 + col2 * chn_s2 + 3]; 
+					}	
+				}
+
+			}
+		}
+		
+
+
+        cv.imshow('canvasOutput', src);
+
+
+        // schedule the next one.
+        let delay = 1000/FPS - (Date.now() - begin);
+        setTimeout(processVideo, delay);
+};
+
+// schedule the first one.
+setTimeout(processVideo, 0);
+
+</script>
+<script type="text/javascript">
+let utils = new Utils('errorMessage');
+
+let operations = [];
+// let operations = [['rectangle', 100,100,200,200,[255, 0, 0,100], 2 ],['line',100, 210,200, 210, [255, 0, 0, 255], 5]];
+utils.loadCode('codeSnippet', 'codeEditor');
+function printMousePos(event) {
+	operations.push(['rectangle',event.clientX-70,event.clientY,event.clientX-70+100,event.clientY+100, [255,0,0,255], 3]);
+  window.alert("clientX: " +  event.clientX-70+
+    " - clientY: " + event.clientY);
+}
+
+window.onload = function(){
+	  var c = document.getElementById("myCanvas");
+	  var ctx = c.getContext("2d");
+	  var img = document.getElementById("scream");
+	  ctx.drawImage(img, 1, 1);
+	document.getElementById("canvasOutput").addEventListener("click", printMousePos);
+}
+
+let streaming = false;
+let videoInput = document.getElementById('videoInput');
+let startAndStop = document.getElementById('startAndStop');
+let canvasOutput = document.getElementById('canvasOutput');
+let canvasContext = canvasOutput.getContext('2d');
+
+startAndStop.addEventListener('click', () => {
+    if (!streaming) {
+        utils.clearError();
+        // utils.startCamera('qvga', onVideoStarted, 'videoInput');
+        this.onVideoStarted();
+    } else {
+        utils.stopCamera();
+        onVideoStopped();
+    }
+});
+
+function onVideoStarted() {
+	document.getElementById("videoInput").play();
+
+    streaming = true;
+    startAndStop.innerText = 'Stop';
+    videoInput.width = videoInput.videoWidth;
+    videoInput.height = videoInput.videoHeight;
+    utils.executeCode('codeEditor');
+}
+
+function onVideoStopped() {
+    streaming = false;
+    canvasContext.clearRect(0, 0, canvasOutput.width, canvasOutput.height);
+    startAndStop.innerText = 'Start';
+}
+
+utils.loadOpenCv(() => {
+    startAndStop.removeAttribute('disabled');
+});
+
+</script>
+
+</body>
+</html>
+		<!-- if (src.isContinuous()) {
+		    let R = src.data[row * src.cols * src.channels() + col * src.channels()];
+		    let G = src.data[row * src.cols * src.channels() + col * src.channels() + 1];
+		    let B = src.data[row * src.cols * src.channels() + col * src.channels() + 2];
+		    let A = src.data[row * src.cols * src.channels() + col * src.channels() + 3];
+		} -->
+
+<!-- src.data[row * src.cols * src.channels() + col * src.channels()] = 255;
+		    src.data[row * src.cols * src.channels() + col * src.channels() + 1] = 255;
+		    src.data[row * src.cols * src.channels() + col * src.channels() + 2] = 255;
+
+-->
+<!-- 
+
+src1.data[row * col_s1 * chn_s1 + col * chn_s1] = src2.data[row * col_s2 * chn_s2 + col * chn_s2];
+src1.data[row * col_s1 * chn_s1 + col * chn_s1 + 1] = src2.data[row * col_s2 * chn_s2 + col * chn_s2 + 1];
+src1.data[row * col_s1 * chn_s1 + col * chn_s1 + 2] = src2.data[row * col_s2 * chn_s2 + col * chn_s2 + 2];
+src1.data[row * col_s1 * chn_s1 + col * chn_s1 + 3] = src2.data[row * col_s2 * chn_s2 + col * chn_s2 + 3];
+
+
+				src.data[row * src.cols * src.channels() + col * src.channels()] = src2.data[row2 * col_s2 * chn_s2 + col2 * chn_s2];
+			    src.data[row * src.cols * src.channels() + col * src.channels() + 1] = src2.data[row2 * col_s2 * chn_s2 + col2 * chn_s2 + 1];
+			    src.data[row * src.cols * src.channels() + col * src.channels() + 2] = src2.data[row2 * col_s2 * chn_s2 + col2 * chn_s2 + 2];
+			    src.data[row * src.cols * src.channels() + col * src.channels() + 3] = src2.data[row2 * col_s2 * chn_s2 + col2 * chn_s2 + 3]; -->

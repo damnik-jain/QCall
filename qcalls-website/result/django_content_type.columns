@@ -1,0 +1,4 @@
+"name","type","length","leftDigits","rightDigits"
+"id","INTEGER","2","2","0"
+"app_label","STRING","12","0","0"
+"model","STRING","12","0","0"

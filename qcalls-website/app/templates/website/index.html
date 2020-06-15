@@ -1,0 +1,63 @@
+{% extends "website/base.html" %}
+{% load static %}
+
+
+{% block actualbody %}
+
+
+     <!-- HERO -->
+     <section class="hero hero-bg d-flex justify-content-center align-items-center">
+               <div class="container">
+                    <div class="row">
+
+                        <div class="col-lg-6 col-md-10 col-12 d-flex flex-column justify-content-center align-items-center">
+                              <div class="hero-text">
+
+                                   <h1 class="text-white" data-aos="fade-up">Conduct meetings as good as live</h1>
+
+                                   <a href="/conference" class="custom-btn btn-bg btn mt-3" data-aos="fade-up" data-aos-delay="100">Get started!</a>
+
+                                   <strong class="d-block py-3 pl-2 text-white" data-aos="fade-up" data-aos-delay="200"><i class="fa fa-phone mr-2"></i>+91 7666 196 382</strong>
+                              </div>
+                        </div>
+
+                        <div class="col-lg-6 col-12">
+                          <div class="hero-image" data-aos="fade-up" data-aos-delay="300">
+
+                            <img src="{% static 'images/working-girl' %}.png" class="img-fluid" alt="working girl">
+                          </div>
+                        </div>
+
+                    </div>
+               </div>
+     </section>
+
+
+     <!-- ABOUT -->
+     <section class="about section-padding pb-0" id="about">
+          <div class="container">
+               <div class="row">
+
+                    <div class="col-lg-7 mx-auto col-md-10 col-12">
+                         <div class="about-info">
+
+                              <h2 class="mb-4" data-aos="fade-up">the new <strong>Innovative way of conducting meeting</strong> </h2>
+
+                              <p class="mb-0" data-aos="fade-up">Conduct meeting from anywhere with our fast and easy platform on the go and engage with hundreds of people. A great oppportunity knocking at your doorstep.</p>
+                         </div>
+
+                         <div class="about-image" data-aos="fade-up" data-aos-delay="200">
+
+                          <img src="{% static 'images/office.png' %}" class="img-fluid" alt="office">
+                        </div>
+                    </div>
+
+               </div>
+          </div>
+     </section>
+
+
+
+{% endblock %}
+
+
