@@ -102,9 +102,13 @@ def syncOperations(request):
 			o = None
 			try:
 				o = Operations.objects.get(email=email)
+				print("updating")
+				print(o)
+				print(opr)
 				o.operations = opr
 				o.save()
 			except:
+				print("Creating ",opr)
 				Operations.objects.create(email=email, operations=opr)
 		return HttpResponse('Done')
 
@@ -113,12 +117,15 @@ def getOperations(request):
 	email = request.GET.get('email', '')
 	res = []
 	if email!='':
-		try:
-			o = Operations.objects.get(email=email)
-			res = o.operations
-		except:
-			res = []
-	return JsonResponse(res, safe=False)
+		# try:
+		o = Operations.objects.get(email=email)
+		print(o)
+		res = o.operations
+		# except:
+			# res = []
+	print(res)
+	return HttpResponse(res)
+	# return JsonResponse(res, safe=False)
 
 
 
@@ -237,10 +244,18 @@ def voice_request(request):
 
 	transcript = ""
 	for i in result['results']:
+		print("inside result")
 		transcript += " "+str(i['alternatives'][0]['transcript'])
 		print(i['alternatives'][0]['transcript'])
-	summary = summarize(transcript,ratio=0.3,split=True)
-	transcript += "<br><br><h2>Summary<h2><p>"+str(summary)+"</p>"
+	if transcript=="":
+		transcript = "No speech"
+		summary = "No speech"
+	else:
+		try:
+			summary = summarize(transcript,ratio=0.3,split=True)
+		except:
+			summary = transcript
+	transcript += "<br><br><h3>Summary<h3><p>"+str(summary)+"</p>"
 	print("Final Transcript: "+transcript)
 	Transcript.objects.create(meeting_id=request.session.get("mid",""),
 		transcript=transcript,audio_file=fileurl)
@@ -370,7 +385,7 @@ def getMeetingStatus(request):
 	res = {}
 	res["status"] = status
 	try:
-		t = Transcript.objects.get(email=m.email)
+		t = Transcript.objects.get(meeting_id=mid)
 		res["transcript"] = t.transcript
 		res["audio_file"] = t.audio_file
 		res["present"] = 1
@@ -383,7 +398,9 @@ def getMeetingStatus(request):
 
 @csrf_exempt
 def startMeeting(request):
+	print("Meeting ID ",request.session.get('mid'))
 	m = Meeting.objects.get(meeting_id=request.session.get('mid'))
+	print(m)
 	m.status = 2
 	m.save()
 	# print("\n\n\n\n\n\n\n Meeting status update to 2\n\n\n\n\n\n\n\n\n")

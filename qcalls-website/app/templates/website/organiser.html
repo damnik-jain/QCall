@@ -218,11 +218,14 @@ function removeAllObject(event){
 
 function adjustOpacity(){
   let opac = $("#opacity-value").val();
-  $("#object-tags .object-overlay").css("opacity", opac);
+  $("#object-tags .object-overlay").each(function( index ) {
+    $(this).css("opacity", opac);
+    operations[$(this).attr("data-id")][6] = opac;
+  });
+  syncOperations(operations);
   
   // $("#object-tags .object-overlay").each(function( index ) {
-  //     $(this).css()
-  
+  //     $(this).css();
   //   });
 }
 
@@ -246,6 +249,7 @@ $(document).ready(function() {
   });
 
   $("#canvasOutput").click(function(e){
+
     // let  = (e.pageX);
     // let  = (e.pageY);
     // let exactX = (e.pageX - $(this).offset().left);
@@ -257,7 +261,7 @@ $(document).ready(function() {
     // console.log(exactX);
     // console.log(exactY);
     if(image_selected!="-1"){
-      operations[image_selected] = ["object", exactX, exactY, $(this).offset().left, $(this).offset().top,image_selected_url , -1];  
+      operations[image_selected] = ["object", exactX, exactY, $(this).offset().left, $(this).offset().top,image_selected_url , 1];  
     }
     syncOperations(operations);
   });
@@ -315,7 +319,11 @@ let PARTICIPANT_FPS = 2000;
 function getParticipant(){
   console.log("getParticipant()");
   $.get( "{% url 'getParticipants' %}?email="+email, function( data ) {
-      pr = JSON.parse(data);
+      //Harper
+      console.log(data);
+      // pr = JSON.parse(data);
+      pr = data;
+
       console.log("Participants");
       console.log(pr);
       $("#pr-div").html('');

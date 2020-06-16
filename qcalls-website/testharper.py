@@ -2,13 +2,9 @@ import requests
 import json
 
 payload = {
-    "operation":"search_by_value",
-    "schema":"sync",
-    "table":"operation",
-    "search_attribute":"email",
-    "search_value":"d@gmail.com",
-    "get_attributes":["*"]
-}
+        "operation":"sql",
+        "sql":"update sync.operation set operations =\"{hello}\" where email = 'jaik@gmail.com'"
+    }
 
 
 url = "https://qcalls-damnik.harperdbcloud.com"
@@ -23,4 +19,5 @@ headers = {
 
 response = requests.request("POST", url, data=payload, headers=headers)
 
+print(response.json())
 print(response.json()[0])

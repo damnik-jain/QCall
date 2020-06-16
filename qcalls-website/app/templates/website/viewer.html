@@ -167,9 +167,10 @@ function processObject(){
       console.log("Removing: "+$(this).attr("data-id"));
       console.log($(this).attr("data-id")+"    --   "+ocopy.hasOwnProperty($(this).attr("data-id")));
       if(ocopy.hasOwnProperty($(this).attr("data-id"))){
-        delete ocopy[$(this).attr("data-id")]; 
+        // delete ocopy[$(this).attr("data-id")]; 
+        $("#videocontainer [data-id="+$(this).attr("data-id")+"]").remove();
       }else{
-        $("#videocontainer [data-id="+$(this).attr("data-id")+"]").remove()
+        $("#videocontainer [data-id="+$(this).attr("data-id")+"]").remove();
       }
     });
 
@@ -179,7 +180,7 @@ function processObject(){
       let ide = key+parseInt(obj[1])+parseInt(obj[2]);
       let exactX = obj[1]-obj[3]+$("#videocontainer").offset().left;
       let exactY = obj[2]-obj[4]+$("#videocontainer").offset().top;
-      $("#object-tags").append("<img src='"+obj[5]+"' class='object-overlay' style='position:absolute;top:"+(exactY)+"px;left:"+(exactX)+"px;' data-remove='"+ide+"' data-id='"+key+"' >");
+      $("#object-tags").append("<img src='"+obj[5]+"' class='object-overlay' style='position:absolute;opacity:"+obj[6]+";top:"+(exactY)+"px;left:"+(exactX)+"px;' data-remove='"+ide+"' data-id='"+key+"' >");
       // $("#cancel-tags").append("<p src='"+obj[5]+"' class='object-overlay' style='top:"+exactY+"px;left:"+exactX+"px;z-index:100;' data-remove='"+ide+"' data-id='"+key+"' onclick='removeObject(this);' >X</p>");
     }
     if(meetingStatus){
@@ -198,7 +199,10 @@ let PARTICIPANT_FPS = 2000;
 function getParticipant(){
   console.log("getParticipant()");
   $.get( "{% url 'getParticipants' %}?email="+"{{broadcast}}", function( data ) {
-      pr = JSON.parse(data);
+      //Harper
+      // pr = JSON.parse(data);
+      pr = data;
+
       console.log("Participants");
       console.log(pr);
       $("#pr-div").html('');
