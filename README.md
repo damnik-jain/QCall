@@ -1,6 +1,7 @@
 
 # QCalls
 Conduct meetings as good as live <br>
+QCalls is an video meeting platform that uses AI to make meetings interactive via 3D objects, live presentation and background noise cancellations.
 
 ## Installation Instructions
 There are two folder in the project as mentioned below
