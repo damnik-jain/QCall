@@ -1,5 +1,5 @@
 audioread==2.1.8
-certifi==2018.8.24
+certifi==2022.12.7
 cryptography==2.3
 decorator==4.4.0
 Django==2.1.1
