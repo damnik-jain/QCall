@@ -32,7 +32,7 @@ Unidecode==1.0.22
 urllib3==1.23
 user-agents==1.1.0
 webencodings==0.5.1
-Werkzeug==0.14.1
+Werkzeug==2.2.3
 whitenoise==4.1
 widgetsnbextension==3.5.1
 ibm-cloud-sdk-core==2.0.4
